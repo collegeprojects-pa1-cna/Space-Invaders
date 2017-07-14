@@ -31,11 +31,11 @@ public class Actor {
 		time = 0;
 	}
 	
-	public void act() {
-		updateFrame();
+	public void update() {
+		updateSpriteAnimation();
 	}
 	
-	protected void updateFrame() {
+	private void updateSpriteAnimation() {
 		time++;
 		if (time % frameSpeed == 0) {
 			time = 0;

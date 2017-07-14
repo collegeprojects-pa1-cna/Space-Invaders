@@ -36,9 +36,9 @@ public class Invader extends Actor {
 		stage.actors.add(shot);
 	}
 	
-	public void act() {
+	public void update() {
 
-		super.act();
+		super.update();
 		if (Math.random() < FIRING_FREQUENCY) {
 			if (Math.random() < FIRING_FREQUENCY)
 				fire();

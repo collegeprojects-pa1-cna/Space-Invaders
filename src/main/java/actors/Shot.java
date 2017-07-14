@@ -14,8 +14,8 @@ public class Shot extends Actor {
 		sprites = new String[]{"shot1.gif","shot2.gif"};
 	}
 
-	public void act() {
-		super.act();
+	public void update() {
+		super.update();
 		if (up)
 			posY -= bulletSpeed;
 		else

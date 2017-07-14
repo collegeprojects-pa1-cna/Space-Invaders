@@ -3,7 +3,7 @@ package actors;
 import game.Stage;
 import java.awt.event.KeyEvent;
 
-public class Player extends Actor {
+public class Player extends Actor implements KeyboardControllable {
 	
 	private boolean up,down,left,right;
 	private int score = 0;
@@ -21,8 +21,8 @@ public class Player extends Actor {
 		posY = Stage.HEIGHT/2;
 	}
 
-	public void act() {
-		super.act();		
+	public void update() {
+		super.update();		
 	}
 	
 	protected void updateSpeed() {
@@ -48,7 +48,7 @@ public class Player extends Actor {
 			posY += vy;
 	}
 
-	public void keyReleased(KeyEvent e) {
+	public void triggerKeyRelease(KeyEvent e) {
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_DOWN:
 			down = false;
@@ -66,7 +66,7 @@ public class Player extends Actor {
 		updateSpeed();
 	}
 
-	public void keyPressed(KeyEvent e) {
+	public void triggerKeyPress(KeyEvent e) {
 		switch (e.getKeyCode()) {
 		///*
 		case KeyEvent.VK_UP:

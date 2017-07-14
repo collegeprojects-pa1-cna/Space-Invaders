@@ -11,11 +11,9 @@ import actors.Actor;
 public class Stage extends Canvas implements ImageObserver {
 
 	private static final long serialVersionUID = 1L;
-	//public static final int WIDTH = 320;
-	//public static final int HEIGHT = 240;
-	public static final int WIDTH = 640;
-	public static final int HEIGHT = 480;
-	public static final int DESIRED_FPS = 50; 
+	public static final int WIDTH = 1280;
+	public static final int HEIGHT = 800;
+	public static final int DESIRED_FPS = 60; 
 	
 	protected boolean gameWon = false;
 	protected boolean gameOver = false;
@@ -35,5 +33,13 @@ public class Stage extends Canvas implements ImageObserver {
 	public boolean imageUpdate(Image img, int infoflags, int x, int y,
 			int width, int height) {
 		return false;
-	}	
+	}
+        
+    public void initWorld() {
+
+    }
+
+    public void game() {
+
+    }
 }
