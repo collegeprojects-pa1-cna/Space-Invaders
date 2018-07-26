@@ -322,9 +322,11 @@ public class Invaders extends Stage implements KeyListener {
 	}
 
 	public static void main(String[] args) {
-		//Invaders inv = new Invaders();
+            PongGame pong = new PongGame();
+            pong.game();
+            //Invaders inv = new Invaders();
 		//inv.game();
-        RedBoxGame game = new RedBoxGame();
-        game.game();
+        //RedBoxGame game = new RedBoxGame();
+        //game.game();
     }
 }
