@@ -107,6 +107,16 @@ public class Invaders extends Stage implements KeyListener {
 			}
 		}
 	}
+        
+        public void resetGame() {
+            player.resetScore();
+            gameOver = false;
+            gameWon = false;
+            player.setX(Stage.WIDTH/2 - player.getWidth()/2);
+            player.setY(Stage.HEIGHT - 50);
+            actors = new ArrayList<Actor>();
+            addInvaders();
+        }
 
 	public void initWorld() {
 		actors = new ArrayList<Actor>();
@@ -275,11 +285,12 @@ public class Invaders extends Stage implements KeyListener {
 
 			if (super.gameOver) {
 				paintGameOver();
-				break;
+                                continue;
+				//break;
 			}
 			else if (super.gameWon) {
 				paintGameWon();
-				break;
+				continue;
 			}
 
 			int random = (int)(Math.random()*1000);

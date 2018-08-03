@@ -28,8 +28,8 @@ public class InputHandler {
         if (action == Action.PRESS) {
             if (KeyEvent.VK_ENTER == event.getKeyCode()) {
                 if (stage.gameOver || stage.gameWon) {
-                    stage.initWorld();
-                    stage.game();
+                    stage.resetGame();
+                    //stage.game();
                 }
             }
             else

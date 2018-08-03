@@ -111,4 +111,8 @@ public class Player extends Actor implements KeyboardControllable {
 	public int getScore() {
 		return score;
 	}
+        
+        public void resetScore() {
+            score = 0;
+        }
 }
