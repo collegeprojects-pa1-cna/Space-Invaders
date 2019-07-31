@@ -340,10 +340,12 @@ public class Invaders extends Stage implements KeyListener {
         demo.game();
 
 		//PongGame pong = new PongGame();
-            //pong.game();
-            //Invaders inv = new Invaders();
+		//pong.game();
+
+		//Invaders inv = new Invaders();
 		//inv.game();
-        //RedBoxGame game = new RedBoxGame();
+
+		//RedBoxGame game = new RedBoxGame();
         //game.game();
     }
 }

@@ -22,23 +22,18 @@ public class Paddle extends Actor implements KeyboardControllable {
     private ePlayerNumber playerNumber;
     
     public Paddle(Stage canvas, ePlayerNumber playerNo) {
-        super(canvas);
+        super(canvas, 10, 80, 10, 80);
         playerNumber = playerNo;
         sprites = new String[]{"paddle.png"};
         frame = 0;
-        
-        
-        
-        width = 10;
-        height = 80;
-        
+
         posY = Stage.HEIGHT / 2;
         
         if( playerNumber == ePlayerNumber.PN_ONE) {
             posX = 0;
         }
         else {
-            posX = Stage.WIDTH - width -10;
+            posX = Stage.WIDTH - getWidth() -10;
         }
         
         
@@ -48,8 +43,8 @@ public class Paddle extends Actor implements KeyboardControllable {
         super.update();
         posY += vy * 3;
         
-        if( posY > Stage.HEIGHT - height ) {
-            posY = Stage.HEIGHT - height;
+        if( posY > Stage.HEIGHT - getHeight() ) {
+            posY = Stage.HEIGHT - getHeight();
         }
         else if( posY < 0 ) {
             posY = 0;
