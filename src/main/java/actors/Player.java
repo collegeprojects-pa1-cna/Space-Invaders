@@ -9,14 +9,12 @@ public class Player extends Actor implements KeyboardControllable {
 	private int score = 0;
 	
 	public Player(Stage stage) {
-		super(stage);
+		super(stage, 32, 20, 32, 20);
 
 		sprites = new String[]{"player.gif"};
 		frame = 0;
 		frameSpeed = 35;
 		actorSpeed = 10;
-		width = 32;
-		height = 20;
 		posX = Stage.WIDTH/2;
 		posY = Stage.HEIGHT/2;
 	}
@@ -38,13 +36,13 @@ public class Player extends Actor implements KeyboardControllable {
 			vx = actorSpeed;
 		
 		//don't allow scrolling off the edge of the screen		
-		if (posX - width/2 > 0 && vx < 0)
+		if (posX - getWidth()/2 > 0 && vx < 0)
 			posX += vx;
-		else if (posX + width  + (width/2)< Stage.WIDTH && vx > 0)
+		else if (posX + getWidth()  + (getWidth()/2)< Stage.WIDTH && vx > 0)
 			posX += vx;
-		else if (posY - height/2 > 0 && vy < 0)
+		else if (posY - getHeight()/2 > 0 && vy < 0)
 			posY += vy;
-		else if (posY + height + (height/2) < Stage.HEIGHT && vy > 0)
+		else if (posY + getHeight() + (getHeight()/2) < Stage.HEIGHT && vy > 0)
 			posY += vy;
 	}
 

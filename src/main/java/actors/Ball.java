@@ -14,7 +14,7 @@ import game.Stage;
 public class Ball extends Actor {
     
     public Ball(Stage canvas) {
-        super(canvas);
+        super(canvas, 20, 20, 20, 20);
         sprites = new String[] {"ball.png"};
         frame = 0;
         
@@ -22,12 +22,6 @@ public class Ball extends Actor {
         posY = Stage.HEIGHT / 2;
         
         vx = -3;
-        
-        
-        
-        width = 20;
-        height = 20;
-        
     }
     
     public void update() {
@@ -35,7 +29,7 @@ public class Ball extends Actor {
         posX += vx;
         posY += vy;
         
-        if( posY > (Stage.HEIGHT - height) || posY < 0) {
+        if( posY > (Stage.HEIGHT - getHeight()) || posY < 0) {
             vy = -vy;
         }
         

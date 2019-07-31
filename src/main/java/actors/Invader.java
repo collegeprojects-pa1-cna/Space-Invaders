@@ -13,7 +13,7 @@ public class Invader extends Actor {
 	private int advanceTime = 1000;
 	
 	public Invader(Stage stage) {
-		super(stage);
+		super(stage, 20, 20, 20, 20);
 		
 		if (((int)(Math.random()*10))%2 == 0) 
 			sprites = new String[]{"invader1.gif", "invader2.gif"};
@@ -23,16 +23,15 @@ public class Invader extends Actor {
 		frame = 0;
 		frameSpeed = 50;
 		actorSpeed = 100;
-		width = 20;
-		height = 20;
 		posX = Stage.WIDTH/2;
 		posY = Stage.HEIGHT/2;
 	}
 	
 	public void fire() {
 		InvaderShot shot = new InvaderShot(stage);			
-		shot.setX(posX + width/2);
+		shot.setX(posX + getWidth()/2);
 		shot.setY(posY + shot.getHeight());
+
 		stage.actors.add(shot);
 	}
 	
@@ -66,7 +65,7 @@ public class Invader extends Actor {
 	private void updateYSpeed() {
 		step++;
 		if (step == advanceTime) {
-			posY += height;
+			posY += getHeight();
 			step = 0;
 		}	
 

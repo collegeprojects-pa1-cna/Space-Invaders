@@ -10,7 +10,7 @@ public class Bunker extends Actor {
 	private Color pixels[][] = new Color[40][20];
 	
 	public Bunker(Stage canvas) {
-		super(canvas);
+		super(canvas, 40, 20, 40, 20);
 		initPixels();
 	}
 	

@@ -7,11 +7,9 @@ public class Ufo extends Actor {
 	private static final int POINT_VALUE = 50;
 	
 	public Ufo(Stage stage) {		
-		super(stage);		
+		super(stage, 30, 17, 30, 17);
 		sprites = new String[]{"ufo0.gif","ufo1.gif","ufo2.gif","ufo3.gif","ufo4.gif"};
 		frameSpeed = 100;
-		width = 30;
-		height = 17;
 		posX = Stage.WIDTH/2;
 		posY = Stage.HEIGHT/2;
 		setVx(1);

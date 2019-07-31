@@ -8,13 +8,17 @@ import java.awt.Rectangle;
 
 public class Actor {
 
+	public static boolean debugCollision = false;
+
 	private static final int POINT_VALUE = 0;
 	protected int vx; 
 	protected int vy;
 	protected int posX;
 	protected int posY;
-	protected int height;
-	protected int width;
+	private int height;
+	private int width;
+	protected int collisionWidth;
+	protected int collisionHeight;
 	protected int frame;
 	protected int frameSpeed;
 	protected int actorSpeed;
@@ -23,12 +27,18 @@ public class Actor {
 	protected String[] sprites = null; 
 	protected Stage stage = null;
 
-	public Actor(Stage canvas) {
+	private String debugSpriteName = "squareOutline.png";
+
+	public Actor(Stage canvas, int width, int height, int collisionWidth, int collisionHeight) {
 		this.stage = canvas;
 		frame = 0;
 		frameSpeed = 1;
 		actorSpeed = 10;
 		time = 0;
+		this.width = width;
+		this.height = height;
+		this.collisionWidth = collisionWidth;
+		this.collisionHeight = collisionHeight;
 	}
 	
 	public void update() {
@@ -53,7 +63,16 @@ public class Actor {
 
 			
 	public void paint(Graphics g) {		
-		g.drawImage(ResourceLoader.getInstance().getSprite(sprites[frame]), posX, posY, stage);
+		if( debugCollision ) {
+			int horizOffset = (width - collisionWidth) / 2;
+			int vertOffset = (height - collisionHeight) / 2;
+
+			g.drawImage(ResourceLoader.getInstance().getSprite(debugSpriteName),
+					posX + horizOffset, posY + vertOffset, collisionWidth, collisionHeight, stage);
+		}
+		else {
+			g.drawImage(ResourceLoader.getInstance().getSprite(sprites[frame]), posX, posY, width, height, stage);
+		}
 	}
 	
 	public void setX(int posX) {
@@ -72,7 +91,7 @@ public class Actor {
 		return posY;
 	}
 	
-	protected void setWidth(int width) {
+	public void setWidth(int width) {
 		this.width = width;
 	}
 
@@ -80,12 +99,20 @@ public class Actor {
 		return width;
 	}
 
-	protected void setHeight(int height) {
+	public void setHeight(int height) {
 		this.height = height;
 	}
 
 	public int getHeight() {
 		return height;
+	}
+
+	public void setCollisionHeight(int height) {
+		collisionHeight = height;
+	}
+
+	public void setCollisionWidth(int width) {
+		collisionWidth = width;
 	}
 	
 	public void setVx(int vx) {
@@ -105,7 +132,9 @@ public class Actor {
 	}
 
 	public Rectangle getBounds() {
-		return new Rectangle(posX,posY,width, height);
+		int horizOffset = (width - collisionWidth) / 2;
+		int vertOffset = (height - collisionHeight) / 2;
+		return new Rectangle(posX + horizOffset,posY + vertOffset,collisionWidth, collisionHeight);
 	}
 	
 	public void collision(Actor a) {		

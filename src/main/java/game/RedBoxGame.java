@@ -7,18 +7,12 @@ package game;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.TexturePaint;
-import java.awt.Transparency;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 
@@ -26,19 +20,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import actors.Actor;
-import actors.Invader;
-import actors.Player;
-import actors.Shot;
-import actors.Ufo;
-import game.Stage;
-import actors.RedBox;
+import actors.Bear;
 /**
  *
  * @author eric.stock
  */
 public class RedBoxGame extends Stage implements KeyListener {
 
-    private RedBox redBox;	
+    private Bear bear;
     public long usedTime;
     public BufferStrategy strategy;	 //double buffering strategy
     private InputHandler keyPressedHandler;
@@ -46,8 +35,7 @@ public class RedBoxGame extends Stage implements KeyListener {
 
     public RedBoxGame() {
         //init the UI
-        
-        
+
         setBounds(0,0,Stage.WIDTH,Stage.HEIGHT);
         setBackground(Color.BLACK);		
 
@@ -72,7 +60,6 @@ public class RedBoxGame extends Stage implements KeyListener {
             }
           }); 
 
-
         addKeyListener(this);
 
         //create a double buffer
@@ -80,54 +67,25 @@ public class RedBoxGame extends Stage implements KeyListener {
         strategy = getBufferStrategy();
         requestFocus();
         initWorld();
-        
-
     }
     
     public void initWorld() {
         actors = new ArrayList<Actor>();
         gameOver = false;
         gameWon = false;
-        //add a player
-        redBox = new RedBox(this);
-        keyPressedHandler = new InputHandler(this, redBox);
+        bear = new Bear(this);
+        keyPressedHandler = new InputHandler(this, bear);
         keyPressedHandler.action = InputHandler.Action.PRESS;
-        keyReleasedHandler = new InputHandler(this, redBox);
-        keyReleasedHandler.action = InputHandler.Action.RELSEASE;			
+        keyReleasedHandler = new InputHandler(this, bear);
+        keyReleasedHandler.action = InputHandler.Action.RELSEASE;
     }
     
-    
     public void game() {
-		//loopSound("music.wav");		
 		usedTime= 0;				
 		while(isVisible()) {
 			long startTime = System.currentTimeMillis();
-			
-			/*backgroundY--;
-			if (backgroundY < 0)
-				backgroundY = backgroundTile.getHeight();
-
-			if (super.gameOver) { 
-				paintGameOver();
-				break;
-			} 
-			else if (super.gameWon) {
-				paintGameWon();
-				break;
-			}*/
-			
-			/*int random = (int)(Math.random()*1000);
-			if (random == 700) {
-				Actor ufo = new Ufo(this);
-				ufo.setX(0);
-				ufo.setY(20);
-				ufo.setVx(1);
-				actors.add(ufo);
-			}*/
-			
 			updateWorld();
 			paintWorld();
-			
 			usedTime = System.currentTimeMillis() - startTime;
 			
 			//calculate sleep time
@@ -144,7 +102,7 @@ public class RedBoxGame extends Stage implements KeyListener {
 	}
     
     public void updateWorld() {		
-        redBox.update();
+        bear.update();
     }
     
     public void paintWorld() {
@@ -154,19 +112,14 @@ public class RedBoxGame extends Stage implements KeyListener {
         //init image to background
         g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
-        //load subimage from the background
-        //g.drawImage( background,0,0,Stage.WIDTH,Stage.HEIGHT,0,backgroundY,Stage.WIDTH,backgroundY+Stage.HEIGHT,this);
 
         //paint the actors
         for (int i = 0; i < actors.size(); i++) {
                 Actor actor = actors.get(i);
                 actor.paint(g);
         }
+        bear.paint(g);
 
-        redBox.paint(g);
-        //paintScore(g);		
-        //paintFPS(g);
-        //swap buffer
         strategy.show();		
     }
     
