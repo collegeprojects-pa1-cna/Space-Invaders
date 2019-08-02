@@ -61,6 +61,19 @@ public class Actor {
 		}).start();
 	}
 
+	private boolean tileImage = false;
+	private int tileWidth;
+	private int tileHeight;
+
+	public void SetTilingEnabled(int width, int height) {
+		tileImage = true;
+		tileWidth = width;
+		tileHeight = height;
+	}
+
+	public void SetTilingDisabled() {
+		tileImage = false;
+	}
 			
 	public void paint(Graphics g) {		
 		if( debugCollision ) {
@@ -71,7 +84,51 @@ public class Actor {
 					posX + horizOffset, posY + vertOffset, collisionWidth, collisionHeight, stage);
 		}
 		else {
-			g.drawImage(ResourceLoader.getInstance().getSprite(sprites[frame]), posX, posY, width, height, stage);
+			int tileX = 0;
+
+			if( tileImage ) {
+				while(true) {
+					int offsetX = tileWidth * tileX;
+					tileX++;
+					if( (width - offsetX) > tileWidth ) {
+						int tileY = 0;
+						while( true ) {
+							int offsetY = tileHeight * tileY;
+							tileY++;
+							if( (height - offsetY ) > tileHeight ) {
+								g.drawImage(ResourceLoader.getInstance().getSprite(sprites[frame]), posX + offsetX, posY + offsetY, tileWidth, tileHeight, stage);
+							}
+							else {
+								g.drawImage(ResourceLoader.getInstance().getSprite(sprites[frame]), posX + offsetX, posY + offsetY,
+										posX + offsetX + tileWidth, (posY + offsetY) + height - offsetY, 0, 0,
+										tileWidth, height - offsetY, stage);
+								break;
+							}
+						}
+					}
+					else {
+						int tileY = 0;
+						while( true ) {
+							int offsetY = tileHeight * tileY;
+							tileY++;
+							if( (height - offsetY ) > tileHeight ) {
+								g.drawImage(ResourceLoader.getInstance().getSprite(sprites[frame]), posX + offsetX, posY + offsetY,
+										(posX + offsetX )+ (width - offsetX), posY + offsetY + tileHeight, 0, 0,
+										width - offsetX, tileHeight, stage);}
+							else {
+								g.drawImage(ResourceLoader.getInstance().getSprite(sprites[frame]), posX + offsetX, posY + offsetY,
+										(posX + offsetX )+ (width - offsetX), (posY + offsetY) + (height - offsetY), 0, 0,
+										width - offsetX, height - offsetY, stage);
+								break;
+							}
+						}
+						break;
+					}
+				}
+			}
+			else {
+				g.drawImage(ResourceLoader.getInstance().getSprite(sprites[frame]), posX, posY, width, height, stage);
+			}
 		}
 	}
 	
