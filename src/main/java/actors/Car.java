@@ -26,22 +26,24 @@ public class Car extends Actor implements KeyboardControllable {
         playerNumber = playerNo;
         sprites = new String[]{"car.png"};
         frame = 0;
-        posY = Stage.HEIGHT / 2;
-
-        if( playerNumber == ePlayerNumber.PN_ONE) {
-            posX = 0;
-        }
-        else {
-            posX = Stage.WIDTH - getWidth() -10;
-        }
+        posX = Stage.WIDTH / 2 - getWidth() / 2;
+        posY = Stage.HEIGHT - getHeight() * 2;
     }
 
     public void update() {
         super.update();
+        posX += vx * 3;
         posY += vy * 3;
 
+        if( posX > Stage.WIDTH - getWidth() ) {
+            posX = Stage.WIDTH - getWidth();
+        }
+        else if( posX < 0 ) {
+            posX = 0;
+        }
+
         if( posY > Stage.HEIGHT - getHeight() ) {
-            posY = Stage.HEIGHT - getHeight();
+            posY = Stage.HEIGHT - getHeight() * 2;
         }
         else if( posY < 0 ) {
             posY = 0;
@@ -50,41 +52,31 @@ public class Car extends Actor implements KeyboardControllable {
 
     @Override
     public void triggerKeyPress(KeyEvent e) {
-        if( playerNumber == ePlayerNumber.PN_ONE) {
-            if( e.getKeyCode() == KeyEvent.VK_S) {
-                vy = 1;
-            }
-            else if( e.getKeyCode() == KeyEvent.VK_W) {
-                vy = -1;
-            }
+        if( e.getKeyCode() == KeyEvent.VK_D) {
+            vx = 1;
         }
-        else {
-            if( e.getKeyCode() == KeyEvent.VK_DOWN) {
-                vy = 1;
-            }
-            else if( e.getKeyCode() == KeyEvent.VK_UP) {
-                vy = -1;
-            }
+        else if( e.getKeyCode() == KeyEvent.VK_A) {
+            vx = -1;
+        }
+        else if( e.getKeyCode() == KeyEvent.VK_S) {
+            vy = 1;
+        }
+        else if( e.getKeyCode() == KeyEvent.VK_W) {
+            vy = -1;
         }
     }
 
     @Override
     public void triggerKeyRelease(KeyEvent e) {
-        if( playerNumber == ePlayerNumber.PN_ONE) {
-            if( e.getKeyCode() == KeyEvent.VK_S) {
-                vy = 0;
-            }
-            else if( e.getKeyCode() == KeyEvent.VK_W) {
-                vy = 0;
-            }
+        if (e.getKeyCode() == KeyEvent.VK_D) {
+            vx = 0;
+        } else if (e.getKeyCode() == KeyEvent.VK_A) {
+            vx = 0;
         }
-        else {
-            if( e.getKeyCode() == KeyEvent.VK_DOWN) {
-                vy = 0;
-            }
-            else if( e.getKeyCode() == KeyEvent.VK_UP) {
-                vy = 0;
-            }
+        if (e.getKeyCode() == KeyEvent.VK_S) {
+            vy = 0;
+        } else if (e.getKeyCode() == KeyEvent.VK_W) {
+            vy = 0;
         }
     }
 }
