@@ -28,7 +28,7 @@ public class DriveDemo extends Stage implements KeyListener {
 
     public long usedTime;//time taken per game step
     public BufferStrategy strategy;	 //double buffering strategy
-    public int roadHorizontalOffset;
+    public int roadVerticalOffset;
 
     private TNT tnt;
 
@@ -42,11 +42,11 @@ public class DriveDemo extends Stage implements KeyListener {
 
     public DriveDemo() {
         //init the UI
-        setBounds(0,0,Stage.WIDTH,Stage.HEIGHT);
+        setBounds(0,0,Stage.HEIGHT,Stage.WIDTH);
         setBackground(Color.BLUE);
 
         JPanel panel = new JPanel();
-        panel.setPreferredSize(new Dimension(Stage.WIDTH,Stage.HEIGHT));
+        panel.setPreferredSize(new Dimension(Stage.HEIGHT,Stage.WIDTH));
         panel.setLayout(null);
 
         panel.add(this);
@@ -84,7 +84,7 @@ public class DriveDemo extends Stage implements KeyListener {
         //keyPressedHandlerRight.action = InputHandler.Action.PRESS;
         //keyReleasedHandlerRight = new InputHandler(this, paddleRight);
         //keyReleasedHandlerRight.action = InputHandler.Action.RELSEASE;
-        roadHorizontalOffset = 0;
+        roadVerticalOffset = 0;
     }
 
 
@@ -107,9 +107,8 @@ public class DriveDemo extends Stage implements KeyListener {
 
 
 
-        g.drawImage(ResourceLoader.getInstance().getSprite("road.png"), -roadHorizontalOffset, 0, this);
-
-        g.drawImage(ResourceLoader.getInstance().getSprite("road.png"), -roadHorizontalOffset + Stage.WIDTH, 0, this);
+        g.drawImage(ResourceLoader.getInstance().getSprite("road.png"), 0, roadVerticalOffset - Stage.HEIGHT, this);
+        g.drawImage(ResourceLoader.getInstance().getSprite("road.png"), 0, roadVerticalOffset, this);
 
         //load subimage from the background
 
@@ -137,17 +136,17 @@ public class DriveDemo extends Stage implements KeyListener {
     public void paintFPS(Graphics g) {
         g.setColor(Color.RED);
         if (usedTime > 0)
-            g.drawString(String.valueOf(1000/usedTime)+" fps",0,Stage.HEIGHT-50);
+            g.drawString(String.valueOf(1000/usedTime)+" fps",Stage.HEIGHT-50,0);
         else
-            g.drawString("--- fps",0,Stage.HEIGHT-50);
+            g.drawString("--- fps",Stage.HEIGHT-50,0);
     }
 
     public void paint(Graphics g) {}
 
     public void updateWorld() {
 
-        roadHorizontalOffset += 10;
-        roadHorizontalOffset %= Stage.WIDTH;
+        roadVerticalOffset += 10;
+        roadVerticalOffset %= Stage.HEIGHT;
 
         car.update();
 

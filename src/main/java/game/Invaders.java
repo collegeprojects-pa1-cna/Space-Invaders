@@ -40,46 +40,46 @@ public class Invaders extends Stage implements KeyListener {
 	private BufferedImage background, backgroundTile; //background cache
 	private int backgroundY; //background cache position
 
-	public Invaders() {
-		//init the UI
-		setBounds(0,0,Stage.WIDTH,Stage.HEIGHT);
-		setBackground(Color.BLACK);
-
-		JPanel panel = new JPanel();
-		panel.setPreferredSize(new Dimension(Stage.WIDTH,Stage.HEIGHT));
-		panel.setLayout(null);
-
-		panel.add(this);
-
-		JFrame frame = new JFrame("Invaders");
-		frame.add(panel);
-
-		frame.setBounds(0,0,Stage.WIDTH,Stage.HEIGHT);
-		frame.setResizable(false);
-		frame.setVisible(true);
-
-		//cleanup resources on exit
-		frame.addWindowListener( new WindowAdapter() {
-			          public void windowClosing(WindowEvent e) {
-			        	ResourceLoader.getInstance().cleanup();
-			            System.exit(0);
-			          }
-			        });
-
-
-		addKeyListener(this);
-
-		//create a double buffer
-		createBufferStrategy(2);
-		strategy = getBufferStrategy();
-		requestFocus();
-		initWorld();
-
-		keyPressedHandler = new InputHandler(this, player);
-		keyPressedHandler.action = InputHandler.Action.PRESS;
-		keyReleasedHandler = new InputHandler(this, player);
-		keyReleasedHandler.action = InputHandler.Action.RELSEASE;
-	}
+//	public Invaders() {
+//		//init the UI
+//		setBounds(0,0,Stage.WIDTH,Stage.HEIGHT);
+//		setBackground(Color.BLACK);
+//
+//		JPanel panel = new JPanel();
+//		panel.setPreferredSize(new Dimension(Stage.WIDTH,Stage.HEIGHT));
+//		panel.setLayout(null);
+//
+//		panel.add(this);
+//
+//		JFrame frame = new JFrame("Invaders");
+//		frame.add(panel);
+//
+//		frame.setBounds(0,0,Stage.WIDTH,Stage.HEIGHT);
+//		frame.setResizable(false);
+//		frame.setVisible(true);
+//
+//		//cleanup resources on exit
+//		frame.addWindowListener( new WindowAdapter() {
+//			          public void windowClosing(WindowEvent e) {
+//			        	ResourceLoader.getInstance().cleanup();
+//			            System.exit(0);
+//			          }
+//			        });
+//
+//
+//		addKeyListener(this);
+//
+//		//create a double buffer
+//		createBufferStrategy(2);
+//		strategy = getBufferStrategy();
+//		requestFocus();
+////		initWorld();
+//
+//		keyPressedHandler = new InputHandler(this, player);
+//		keyPressedHandler.action = InputHandler.Action.PRESS;
+//		keyReleasedHandler = new InputHandler(this, player);
+//		keyReleasedHandler.action = InputHandler.Action.RELSEASE;
+//	}
 
 	/**
 	 * add a grid of invaders based on the screen size
@@ -129,7 +129,7 @@ public class Invaders extends Stage implements KeyListener {
 		player.setVx(10);
 
 		//load cached background
-		backgroundTile = ResourceLoader.getInstance().getSprite("space.gif");
+//		backgroundTile = ResourceLoader.getInstance().getSprite("space.gif");
 		background = ResourceLoader.createCompatible(
 		                    WIDTH, HEIGHT+ backgroundTile.getHeight(),
 		                    Transparency.OPAQUE);
