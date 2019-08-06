@@ -42,11 +42,11 @@ public class DriveDemo extends Stage implements KeyListener {
 
     public DriveDemo() {
         //init the UI
-        setBounds(0,0,Stage.HEIGHT,Stage.WIDTH);
+        setBounds(0,0,Stage.WIDTH, Stage.HEIGHT);
         setBackground(Color.BLUE);
 
         JPanel panel = new JPanel();
-        panel.setPreferredSize(new Dimension(Stage.HEIGHT,Stage.WIDTH));
+        panel.setPreferredSize(new Dimension(Stage.WIDTH, Stage.HEIGHT));
         panel.setLayout(null);
 
         panel.add(this);
