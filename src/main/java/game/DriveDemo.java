@@ -8,6 +8,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 
 import javax.swing.JFrame;
@@ -30,7 +33,8 @@ public class DriveDemo extends Stage implements KeyListener {
     public BufferStrategy strategy;	 //double buffering strategy
     public int roadVerticalOffset;
 
-    private Pothole pothole;
+    //hazardsList
+    public List<Hazards> hazards = new ArrayList<Hazards>();
 
     private Splat splat;
     private int splatFrames;
@@ -49,7 +53,7 @@ public class DriveDemo extends Stage implements KeyListener {
 
         panel.add(this);
 
-        JFrame frame = new JFrame("Invaders");
+        JFrame frame = new JFrame("Driving Game");
         frame.add(panel);
 
         frame.setBounds(0,0,Stage.WIDTH,Stage.HEIGHT);
@@ -85,10 +89,11 @@ public class DriveDemo extends Stage implements KeyListener {
 
     public void initWorld() {
         car = new Car(this, Car.ePlayerNumber.PN_ONE);
-
-        pothole = new Pothole(this);
+        hazards = new ArrayList<Hazards>();
+//        hazards = new Hazards(this, "moose");
         //paddleRight = new Paddle(this, Paddle.ePlayerNumber.PN_TWO);
         //ball = new Ball(this);
+        spawnHazard("pothole");
     }
 
     public void paintWorld() {
@@ -107,12 +112,10 @@ public class DriveDemo extends Stage implements KeyListener {
         //load subimage from the background
 
         //paint the actors
-        for (int i = 0; i < actors.size(); i++) {
-            Actor actor = actors.get(i);
-            actor.paint(g);
+        for (int i = 0; i < hazards.size(); i++) {
+            Hazards hazard = hazards.get(i);
+            hazard.paint(g);
         }
-
-        pothole.paint(g);
 
         car.paint(g);
 
@@ -136,14 +139,26 @@ public class DriveDemo extends Stage implements KeyListener {
 
     public void paint(Graphics g) {}
 
+    /**
+     * Spawn hazards method
+     * @param hazardType
+     */
+    private void spawnHazard(String hazardType){
+        Hazards hazard = new Hazards(this, hazardType);
+        hazards.add(hazard);
+    }
+
     public void updateWorld() {
 
         roadVerticalOffset += 10;
         roadVerticalOffset %= Stage.HEIGHT;
 
         car.update();
+        for (int i = 0; i < hazards.size(); i++) {
+            Hazards hazard = hazards.get(i);
+            hazard.update();
+        }
 
-        pothole.update();
 
         if( splat != null ) {
             splat.update();
@@ -156,14 +171,16 @@ public class DriveDemo extends Stage implements KeyListener {
     }
 
     private void checkCollision() {
+        for (int i = 0; i < hazards.size(); i++) {
+            Hazards hazard = hazards.get(i);
+            if( car.getBounds().intersects(hazard.getBounds())) {
+                if( splat == null) {
+                    splat = new Splat(this);
+                    splat.setX(car.getX());
+                    splat.setY(car.getY());
 
-        if( car.getBounds().intersects(pothole.getBounds())) {
-            if( splat == null) {
-                splat = new Splat(this);
-                splat.setX(car.getX());
-                splat.setY(car.getY());
-
-                splatFrames = 0;
+                    splatFrames = 0;
+                }
             }
         }
     }
@@ -178,9 +195,22 @@ public class DriveDemo extends Stage implements KeyListener {
 
 
     public void game() {
-        //loopSound("music.wav");
+        loopSound("music.wav");
         usedTime= 0;
+        Random randomValueSelector = new Random();
+
+//===================================================GAME LOOP==========================================================
         while(isVisible()) {
+            //TODO: Change 900 to a dynamic variable that adjusts depending on score
+            if (randomValueSelector.nextInt(1000) > 990) {
+                int currentHazardSelection = randomValueSelector.nextInt(100);
+                if (currentHazardSelection < 80) {
+                    spawnHazard("pothole");
+                } else if (currentHazardSelection > 80) {
+                    spawnHazard("moose");
+                }
+            }
+            System.out.println(hazards.size());
             long startTime = System.currentTimeMillis();
             checkCollision();
             updateWorld();
@@ -199,7 +229,7 @@ public class DriveDemo extends Stage implements KeyListener {
                 }
             }
             usedTime = System.currentTimeMillis() - startTime;
-        }
+        } // end loop
     }
 
     public void keyPressed(KeyEvent e) {
