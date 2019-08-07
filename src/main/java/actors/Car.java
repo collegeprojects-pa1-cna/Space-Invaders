@@ -17,6 +17,7 @@ import java.util.Map;
 public class Car extends Actor implements KeyboardControllable {
 
     Map<String, Boolean> keysPressed = new HashMap<String, Boolean>();
+    int health;
 
     public enum ePlayerNumber {
         PN_ONE,
@@ -32,7 +33,7 @@ public class Car extends Actor implements KeyboardControllable {
         frame = 0;
         posX = Stage.WIDTH / 2 - getWidth() / 2;
         posY = Stage.HEIGHT - getHeight() * 2;
-
+        health = 100;
         setKeys();
     }
 
@@ -127,4 +128,13 @@ public class Car extends Actor implements KeyboardControllable {
             vx -= 1.5;
         }
     }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void reduceHealth(int damage) {
+        health = health - damage;
+    }
+
 }
