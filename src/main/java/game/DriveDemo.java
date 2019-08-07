@@ -30,15 +30,13 @@ public class DriveDemo extends Stage implements KeyListener {
     public BufferStrategy strategy;	 //double buffering strategy
     public int roadVerticalOffset;
 
-    private TNT tnt;
+    private Pothole pothole;
 
     private Splat splat;
     private int splatFrames;
 
 
     private Car car;
-    //private Paddle paddleRight;
-    //rivate Ball ball;
 
     public DriveDemo() {
         //init the UI
@@ -80,10 +78,6 @@ public class DriveDemo extends Stage implements KeyListener {
         keyReleasedHandlerLeft = new InputHandler(this, car);
         keyReleasedHandlerLeft.action = InputHandler.Action.RELSEASE;
 
-        //keyPressedHandlerRight = new InputHandler(this, paddleRight);
-        //keyPressedHandlerRight.action = InputHandler.Action.PRESS;
-        //keyReleasedHandlerRight = new InputHandler(this, paddleRight);
-        //keyReleasedHandlerRight.action = InputHandler.Action.RELSEASE;
         roadVerticalOffset = 0;
     }
 
@@ -92,7 +86,7 @@ public class DriveDemo extends Stage implements KeyListener {
     public void initWorld() {
         car = new Car(this, Car.ePlayerNumber.PN_ONE);
 
-        tnt = new TNT(this);
+        pothole = new Pothole(this);
         //paddleRight = new Paddle(this, Paddle.ePlayerNumber.PN_TWO);
         //ball = new Ball(this);
     }
@@ -118,16 +112,15 @@ public class DriveDemo extends Stage implements KeyListener {
             actor.paint(g);
         }
 
+        pothole.paint(g);
+
         car.paint(g);
 
-        tnt.paint(g);
 
         if( splat != null ) {
             splat.paint(g);
         }
 
-        //.paint(g);
-        //ball.paint(g);
         paintFPS(g);
         //swap buffer
         strategy.show();
@@ -150,7 +143,7 @@ public class DriveDemo extends Stage implements KeyListener {
 
         car.update();
 
-        tnt.update();
+        pothole.update();
 
         if( splat != null ) {
             splat.update();
@@ -160,13 +153,11 @@ public class DriveDemo extends Stage implements KeyListener {
                 splat = null;
             }
         }
-        //paddleRight.update();
-        //ball.update();
     }
 
     private void checkCollision() {
 
-        if( car.getBounds().intersects(tnt.getBounds())) {
+        if( car.getBounds().intersects(pothole.getBounds())) {
             if( splat == null) {
                 splat = new Splat(this);
                 splat.setX(car.getX());
@@ -175,14 +166,6 @@ public class DriveDemo extends Stage implements KeyListener {
                 splatFrames = 0;
             }
         }
-
-
-        //if( ball.getBounds().intersects(car.getBounds())) {
-        //    ball.collision(car);
-        //} //else if( ball.getBounds().intersects(paddleRight.getBounds())) {
-        //  ball.collision(paddleRight);
-        //}
-
     }
 
     public void loopSound(final String name) {

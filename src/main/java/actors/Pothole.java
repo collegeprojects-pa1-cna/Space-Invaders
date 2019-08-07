@@ -2,15 +2,16 @@ package actors;
 
 import game.Stage;
 
-public class TNT extends Actor {
-    public TNT(Stage canvas) {
+public class Pothole extends Actor {
+    public Pothole(Stage canvas) {
         super(canvas, 80, 80, 80, 80);
 
-        vx = -5;
+        vy = 10;
 
-        sprites = new String[] {"tnt.png"};
+        sprites = new String[] {"pothole.png"};
 
         posX = 500;
+        posY = -500;
     }
 
 
