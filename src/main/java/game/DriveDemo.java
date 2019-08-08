@@ -102,8 +102,8 @@ public class DriveDemo extends Stage implements KeyListener {
 
 
 
-        g.drawImage(ResourceLoader.getInstance().getSprite("road.png"), 0, roadVerticalOffset - Stage.HEIGHT, this);
-        g.drawImage(ResourceLoader.getInstance().getSprite("road.png"), 0, roadVerticalOffset, this);
+        g.drawImage(ResourceLoader.getInstance().getSprite("road-hotline.png"), 0, roadVerticalOffset - Stage.HEIGHT, this);
+        g.drawImage(ResourceLoader.getInstance().getSprite("road-hotline.png"), 0, roadVerticalOffset, this);
 
         //load subimage from the background
 
