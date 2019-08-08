@@ -174,6 +174,7 @@ public class DriveDemo extends Stage implements KeyListener {
         for (int i = 0; i < hazards.size(); i++) {
             Hazards hazard = hazards.get(i);
             if( car.getBounds().intersects(hazard.getBounds())) {
+                car.reduceHealth(10);
                 if( splat == null) {
                     splat = new Splat(this);
                     splat.setX(car.getX());
