@@ -27,7 +27,7 @@ public class Car extends Actor implements KeyboardControllable {
     private ePlayerNumber playerNumber;
 
     public Car(Stage canvas, ePlayerNumber playerNo) {
-        super(canvas, 160,160, 100,160);
+        super(canvas, 160,160, 75,140);
         playerNumber = playerNo;
         sprites = new String[]{"Car_Idle_r.png"};
         frame = 0;
