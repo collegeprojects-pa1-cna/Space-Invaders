@@ -30,7 +30,7 @@ public class DriveDemo extends Stage implements KeyListener {
     public int roadVerticalOffset;
 
     //hazardsList
-    public List<Hazards> hazards = new ArrayList<Hazards>();
+    private List<Hazards> hazards = new ArrayList<Hazards>();
 
     private Splat splat;
     private int splatFrames;
@@ -138,6 +138,7 @@ public class DriveDemo extends Stage implements KeyListener {
 
     /**
      * Spawn hazards method
+     * Takes in desired hazard type as a string, creates a new hazard object and appends it to the hazards array.
      * @param hazardType
      */
     private void spawnHazard(String hazardType){
@@ -183,7 +184,7 @@ public class DriveDemo extends Stage implements KeyListener {
             Hazards hazard = hazards.get(i);
             if( car.getBounds().intersects(hazard.getBounds())) {
                 //TODO: Change 10 to retrieve hazard damage value
-                car.reduceHealth(10);
+                car.reduceHealth(hazard.dealDamage());
                 if (car.getHealth() <= 0) {
                     gameOver();
                 }
@@ -230,7 +231,8 @@ public class DriveDemo extends Stage implements KeyListener {
                     spawnHazard("moose");
                 }
             }
-            System.out.println(hazards.size());
+            // Debug code - Will use this in the future for testing actor array
+            //System.out.println(hazards.size());
             long startTime = System.currentTimeMillis();
 
             checkCollision();

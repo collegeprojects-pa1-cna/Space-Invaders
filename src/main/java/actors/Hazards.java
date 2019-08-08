@@ -5,6 +5,10 @@ import game.Stage;
 import java.util.Random;
 
 public class Hazards extends Actor {
+
+    // Attributes
+    private int damage;
+
     //TODO: Update this so it takes in posX and posY
     public Hazards(Stage canvas, String hazardType) {
         super(canvas, 80, 80, 80, 80);
@@ -15,16 +19,42 @@ public class Hazards extends Actor {
         posX = randomInt.nextInt(500);
         posY = -500;
 
-        int damage;
+
         setHazard(hazardType);
     }
 
-
+    /**
+     * Set hazard method takes in hazard type and creates a specific hazard then modifies damage attribute accordingly
+     * @param hazardType
+     */
     private void setHazard(String hazardType){
         //TODO: Change this to call a hashmap or something similar instead of directly plunking the name to the object call
         // this should enable quick assigning of stats
         sprites = new String[] {hazardType + ".png"};
 
+        if ("pothole".equals(hazardType)) {
+            setDamage(10); // pothole damage value
+        } else if ("moose".equals(hazardType)) {
+            setDamage(100); // moose damage value
+        } else {
+            setDamage(10); // default value
+        }
+    }
+
+    /**
+     * Setter for damage attribute
+     * @param damage
+     */
+    private void setDamage(int damage){
+        this.damage = damage;
+    }
+
+    /**
+     * Getter for damage attribute
+     * @return
+     */
+    public int dealDamage(){
+        return damage;
     }
 
     public void update() {
