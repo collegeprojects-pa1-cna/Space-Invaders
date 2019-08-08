@@ -33,5 +33,4 @@ public class Hazards extends Actor {
         posY += vy;
     }
 
-
 }

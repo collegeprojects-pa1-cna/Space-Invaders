@@ -154,9 +154,19 @@ public class DriveDemo extends Stage implements KeyListener {
         roadVerticalOffset %= Stage.HEIGHT;
 
         car.update();
+
+        //TODO: Possibly handle both modifiers and hazards into the actor array
+
+        // Updating hazards position
         for (int i = 0; i < hazards.size(); i++) {
             Hazards hazard = hazards.get(i);
             hazard.update();
+            if (hazard.getY() > Stage.HEIGHT){
+                hazard.setMarkedForRemoval(true);
+            }
+            if (hazard.isMarkedForRemoval()){
+                hazards.remove(i);
+            }
         }
 
 
@@ -174,7 +184,10 @@ public class DriveDemo extends Stage implements KeyListener {
         for (int i = 0; i < hazards.size(); i++) {
             Hazards hazard = hazards.get(i);
             if( car.getBounds().intersects(hazard.getBounds())) {
+                //TODO: Change 10 to retrieve hazard damage value
                 car.reduceHealth(10);
+
+                hazard.setMarkedForRemoval(true);
                 if( splat == null) {
                     splat = new Splat(this);
                     splat.setX(car.getX());
