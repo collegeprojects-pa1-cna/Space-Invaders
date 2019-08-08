@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import actors.*;
 
@@ -26,9 +25,6 @@ public class DriveDemo extends Stage implements KeyListener {
     private InputHandler keyPressedHandlerLeft;
     private InputHandler keyReleasedHandlerLeft;
 
-    private InputHandler keyPressedHandlerRight;
-    private InputHandler keyReleasedHandlerRight;
-
     public long usedTime;//time taken per game step
     public BufferStrategy strategy;	 //double buffering strategy
     public int roadVerticalOffset;
@@ -38,9 +34,10 @@ public class DriveDemo extends Stage implements KeyListener {
 
     private Splat splat;
     private int splatFrames;
-
-
     private Car car;
+    private HealthBar healthBar;
+
+    JPanel gameOverPanel;
 
     public DriveDemo() {
         //init the UI
@@ -89,10 +86,9 @@ public class DriveDemo extends Stage implements KeyListener {
 
     public void initWorld() {
         car = new Car(this, Car.ePlayerNumber.PN_ONE);
+        healthBar = new HealthBar(this, 128, 32, 0, 0);
         hazards = new ArrayList<Hazards>();
 //        hazards = new Hazards(this, "moose");
-        //paddleRight = new Paddle(this, Paddle.ePlayerNumber.PN_TWO);
-        //ball = new Ball(this);
         spawnHazard("pothole");
     }
 
@@ -118,6 +114,7 @@ public class DriveDemo extends Stage implements KeyListener {
         }
 
         car.paint(g);
+        healthBar.paint(g);
 
 
         if( splat != null ) {
@@ -154,6 +151,7 @@ public class DriveDemo extends Stage implements KeyListener {
         roadVerticalOffset %= Stage.HEIGHT;
 
         car.update();
+        healthBar.updateHealthbar(car.getHealth());
 
         //TODO: Possibly handle both modifiers and hazards into the actor array
 
@@ -186,6 +184,9 @@ public class DriveDemo extends Stage implements KeyListener {
             if( car.getBounds().intersects(hazard.getBounds())) {
                 //TODO: Change 10 to retrieve hazard damage value
                 car.reduceHealth(10);
+                if (car.getHealth() <= 0) {
+                    gameOver();
+                }
 
                 hazard.setMarkedForRemoval(true);
                 if( splat == null) {
@@ -197,6 +198,10 @@ public class DriveDemo extends Stage implements KeyListener {
                 }
             }
         }
+    }
+
+    private void gameOver(){
+        setVisible(false);
     }
 
     public void loopSound(final String name) {
@@ -214,6 +219,7 @@ public class DriveDemo extends Stage implements KeyListener {
         Random randomValueSelector = new Random();
 
 //===================================================GAME LOOP==========================================================
+
         while(isVisible()) {
             //TODO: Change 900 to a dynamic variable that adjusts depending on score
             if (randomValueSelector.nextInt(1000) > 990) {
@@ -226,6 +232,7 @@ public class DriveDemo extends Stage implements KeyListener {
             }
             System.out.println(hazards.size());
             long startTime = System.currentTimeMillis();
+
             checkCollision();
             updateWorld();
             paintWorld();
