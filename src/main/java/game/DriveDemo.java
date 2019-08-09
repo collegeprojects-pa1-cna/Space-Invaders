@@ -6,7 +6,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -27,6 +26,7 @@ public class DriveDemo extends Stage implements KeyListener {
     public long usedTime;//time taken per game step
     public BufferStrategy strategy;	 //double buffering strategy
     public int roadVerticalOffset;
+    Graphics2D g;
 
     //hazardsList
     private List<Hazards> hazards = new ArrayList<Hazards>();
@@ -36,21 +36,21 @@ public class DriveDemo extends Stage implements KeyListener {
     private Car car;
     private HealthBar healthBar;
 
-    private List<Light> leftLights = new ArrayList<>();
-    private List<Light> rightLights = new ArrayList<>();
+    JPanel panel;
     private Light light;
     private Light light2;
     private Light light3;
     private Light light4;
 
-    JPanel gameOverPanel;
+    private MenuButton retryButton;
+    private MenuButton quitButton;
 
     public DriveDemo() {
         //init the UI
         setBounds(0,0,Stage.WIDTH, Stage.HEIGHT);
         setBackground(Color.BLUE);
 
-        JPanel panel = new JPanel();
+        panel = new JPanel();
         panel.setPreferredSize(new Dimension(Stage.WIDTH, Stage.HEIGHT));
         panel.setLayout(null);
 
@@ -97,25 +97,25 @@ public class DriveDemo extends Stage implements KeyListener {
 //        hazards = new Hazards(this, "moose");
         spawnHazard("pothole");
         light = new Light(this,300, 300, 0, 0, -90, 0);
-        light2 = new Light(this,300, 300, 0, 0, 520, 0);
-        light3 = new Light(this,300, 300, 0, 0, -90, -1000);
-        light4 = new Light(this,300, 300, 0, 0, 520, -1000);
+        light2 = new Light(this,300, 300, 0, 0, 520, -500);
+        light3 = new Light(this,300, 300, 0, 0, -90, -1500);
+        light4 = new Light(this,300, 300, 0, 0, 520, -2000);
+
+        retryButton = new MenuButton(this, 256, 128, Stage.WIDTH/3 - 13, 450, "retry");
+        quitButton = new MenuButton(this, 256, 128, Stage.WIDTH/3 - 13, 600, "quit");
+
+        //get the graphics from the buffer
+        g = (Graphics2D) strategy.getDrawGraphics();
     }
 
     public void paintWorld() {
 
-        //get the graphics from the buffer
-        Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
-        //init image to background
+                //init image to background
 
         g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
-
-
-
         g.drawImage(ResourceLoader.getInstance().getSprite("road-hotline.png"), 0, roadVerticalOffset - Stage.HEIGHT, this);
         g.drawImage(ResourceLoader.getInstance().getSprite("road-hotline.png"), 0, roadVerticalOffset, this);
-
 
         //paint the actors
         for (int i = 0; i < hazards.size(); i++) {
@@ -130,6 +130,7 @@ public class DriveDemo extends Stage implements KeyListener {
         AlphaComposite transparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,transparentAlpha);
         AlphaComposite opaque = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,opaqueAlpha);
         g.setComposite(transparent);
+
         light.paint(g);
         light2.paint(g);
         light3.paint(g);
@@ -138,14 +139,19 @@ public class DriveDemo extends Stage implements KeyListener {
 
         healthBar.paint(g);
 
-
         if( splat != null ) {
             splat.paint(g);
         }
 
+        if(isGameOver()){
+            retryButton.paint(g);
+            quitButton.paint(g);
+        }
         paintFPS(g);
         //swap buffer
         strategy.show();
+
+
     }
 
     public void paintFPS(Graphics g) {
@@ -169,6 +175,10 @@ public class DriveDemo extends Stage implements KeyListener {
     }
 
     public void updateWorld() {
+        if(isGameOver()){
+            retryButton.update();
+            quitButton.update();
+        }
 
         roadVerticalOffset += 10;
         roadVerticalOffset %= Stage.HEIGHT;
@@ -179,6 +189,7 @@ public class DriveDemo extends Stage implements KeyListener {
         light3.update();
         light4.update();
         healthBar.updateHealthbar(car.getHealth());
+
 
         //TODO: Possibly handle both modifiers and hazards into the actor array
 
@@ -194,7 +205,6 @@ public class DriveDemo extends Stage implements KeyListener {
             }
         }
 
-
         if( splat != null ) {
             splat.update();
             splatFrames++;
@@ -209,7 +219,6 @@ public class DriveDemo extends Stage implements KeyListener {
         for (int i = 0; i < hazards.size(); i++) {
             Hazards hazard = hazards.get(i);
             if( car.getBounds().intersects(hazard.getBounds())) {
-                //TODO: Change 10 to retrieve hazard damage value
                 car.reduceHealth(hazard.dealDamage());
                 if (car.getHealth() <= 0) {
                     gameOver();
@@ -228,7 +237,7 @@ public class DriveDemo extends Stage implements KeyListener {
     }
 
     private void gameOver(){
-        setVisible(false);
+        endGame();
     }
 
     public void loopSound(final String name) {
@@ -247,7 +256,7 @@ public class DriveDemo extends Stage implements KeyListener {
 
 //===================================================GAME LOOP==========================================================
 
-        while(isVisible()) {
+        while(!isGameOver()) {
             //TODO: Change 900 to a dynamic variable that adjusts depending on score
             if (randomValueSelector.nextInt(1000) > 990) {
                 int currentHazardSelection = randomValueSelector.nextInt(100);
@@ -264,6 +273,9 @@ public class DriveDemo extends Stage implements KeyListener {
             checkCollision();
             updateWorld();
             paintWorld();
+            if (isGameOver()){
+                break;
+            }
 
             usedTime = System.currentTimeMillis() - startTime;
 
