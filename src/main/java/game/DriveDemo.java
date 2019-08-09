@@ -225,6 +225,7 @@ public class DriveDemo extends Stage implements KeyListener {
                 hazard.setMarkedForRemoval(true);
                 if( splat == null) {
                     splat = new Splat(this);
+                    splat.randomizeHit();
                     splat.setX(car.getX());
                     splat.setY(car.getY());
 
