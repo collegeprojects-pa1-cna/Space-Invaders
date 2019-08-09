@@ -26,7 +26,6 @@ public class DriveDemo extends Stage implements KeyListener {
 
     public long usedTime;//time taken per game step
     public BufferStrategy strategy;	 //double buffering strategy
-    BufferedImage bufferedImage;
     public int roadVerticalOffset;
 
     //hazardsList
