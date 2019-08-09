@@ -1,10 +1,7 @@
 package game;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +70,7 @@ public class DriveDemo extends Stage implements KeyListener {
 
 
         addKeyListener(this);
+        addMouseListener(new MouseListen());
 
         //create a double buffer
         createBufferStrategy(2);
@@ -110,7 +108,7 @@ public class DriveDemo extends Stage implements KeyListener {
 
     public void paintWorld() {
 
-                //init image to background
+        //init image to background
 
         g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
@@ -256,6 +254,18 @@ public class DriveDemo extends Stage implements KeyListener {
 
                 actor.setMarkedForRemoval(true);
             } // end car intersects
+          
+          
+                hazard.setMarkedForRemoval(true);
+                if( splat == null) {
+                    splat = new Splat(this);
+                    splat.randomizeHit();
+                    splat.setX(car.getX());
+                    splat.setY(car.getY());
+
+                    splatFrames = 0;
+                }
+            }
         }
     }
 
@@ -271,6 +281,20 @@ public class DriveDemo extends Stage implements KeyListener {
         }).start();
     }
 
+    public void reset() {
+        car.setHealth(100);
+        resetGame();
+        initWorld();
+        keyPressedHandlerLeft = new InputHandler(this, car);
+        keyPressedHandlerLeft.action = InputHandler.Action.PRESS;
+        keyReleasedHandlerLeft = new InputHandler(this, car);
+        keyReleasedHandlerLeft.action = InputHandler.Action.RELSEASE;
+        //addKeyListener(this);*/
+        //game();
+
+
+    }
+
 
     public void game() {
         //loopSound("music.wav");
@@ -279,7 +303,7 @@ public class DriveDemo extends Stage implements KeyListener {
 
 //===================================================GAME LOOP==========================================================
 
-        while(!isGameOver()) {
+        while(true) {
             //TODO: Change 900 to a dynamic variable that adjusts depending on score
 
             // Spawn hazards
@@ -310,10 +334,15 @@ public class DriveDemo extends Stage implements KeyListener {
             long startTime = System.currentTimeMillis();
 
             checkCollision();
-            updateWorld();
+
+            if( !isGameOver()) {
+                updateWorld();
+            }
+
             paintWorld();
+
             if (isGameOver()){
-                break;
+                continue;
             }
 
             usedTime = System.currentTimeMillis() - startTime;
@@ -338,16 +367,39 @@ public class DriveDemo extends Stage implements KeyListener {
         if( e.getKeyCode() == KeyEvent.VK_K) {
             Actor.debugCollision = !Actor.debugCollision;
         }
-
-        //keyPressedHandlerRight.handleInput(e);
     }
 
     public void keyReleased(KeyEvent e) {
         keyReleasedHandlerLeft.handleInput(e);
-        //keyReleasedHandlerRight.handleInput(e);
     }
 
     public void keyTyped(KeyEvent e) {
     }
 
+    private class MouseListen implements MouseListener {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if ((retryButton.contains(e.getX(), e.getY())) && isGameOver()) {
+                System.out.println("Clicked retry");
+                reset();
+
+            }
+            else if ((quitButton.contains(e.getX(), e.getY())) && isGameOver()) {
+                System.out.println("Clicked quit");
+            }
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {}
+
+        @Override
+        public void mouseReleased(MouseEvent e) {}
+
+        @Override
+        public void mouseEntered(MouseEvent e) {}
+
+        @Override
+        public void mouseExited(MouseEvent e) {}
+    }
 }

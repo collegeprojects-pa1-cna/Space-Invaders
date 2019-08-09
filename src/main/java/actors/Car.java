@@ -138,6 +138,10 @@ public class Car extends Actor implements KeyboardControllable {
         return health;
     }
 
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
     public void reduceHealth(int damage) {
         health = health - damage;
     }
