@@ -13,7 +13,13 @@ public class HealthBar extends Actor {
         frame = 0;
     }
 
-    public void updateHealthbar(int health) {
-        sprites[0] = "health_" + health + ".png";
+    public void updateHealthbar(int health)
+    {
+        if (health <= 0) {
+            sprites[0] = "health_0.png";
+        }
+        else {
+            sprites[0] = "health_" + health + ".png";
+        }
     }
 }
