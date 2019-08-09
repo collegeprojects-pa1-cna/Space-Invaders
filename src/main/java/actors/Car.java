@@ -18,7 +18,6 @@ public class Car extends Actor implements KeyboardControllable {
 
     Map<String, Boolean> keysPressed = new HashMap<String, Boolean>();
     int health;
-    double modifier = 1;
 
     public enum ePlayerNumber {
         PN_ONE,
@@ -105,33 +104,29 @@ public class Car extends Actor implements KeyboardControllable {
 
     private void updatePlayerCoords() {
         if (keysPressed.get("UP")) {
-            vy -= 1 * modifier; // Movement up
+            vy -= 1;
         }
         if (!keysPressed.get("UP")) {
             vy += 1.5;
         }
         if (keysPressed.get("LEFT")) {
-            vx -= 2 * modifier; // Movement left
+            vx -= 2;
         }
         if (!keysPressed.get("LEFT")) {
             vx += 1.5;
         }
         if (keysPressed.get("DOWN")) {
-            vy += 1 * modifier; // Movement down
+            vy += 1;
         }
         if (!keysPressed.get("DOWN")) {
             vy -= 1.5;
         }
         if (keysPressed.get("RIGHT")) {
-            vx += 2 * modifier; // Movement right
+            vx += 2;
         }
         if (!keysPressed.get("RIGHT")) {
             vx -= 1.5;
         }
-    }
-
-    public void setModifier(double modifier){
-        this.modifier += modifier;
     }
 
     public int getHealth() {

@@ -116,9 +116,9 @@ public class DriveDemo extends Stage implements KeyListener {
         g.drawImage(ResourceLoader.getInstance().getSprite("road-hotline.png"), 0, roadVerticalOffset, this);
 
         //paint the actors
-        for (int i = 0; i < actors.size(); i++) {
-            Actor actor = actors.get(i);
-            actor.paint(g);
+        for (int i = 0; i < hazards.size(); i++) {
+            Hazards hazard = hazards.get(i);
+            hazard.paint(g);
         }
 
         car.paint(g);
@@ -169,12 +169,7 @@ public class DriveDemo extends Stage implements KeyListener {
      */
     private void spawnHazard(String hazardType){
         Hazards hazard = new Hazards(this, hazardType);
-        actors.add(hazard);
-    }
-
-    private void spawnModifier(String modifierType){
-        Modifiers modifier = new Modifiers(this, modifierType);
-        actors.add(modifier);
+        hazards.add(hazard);
     }
 
     public void updateWorld() {
@@ -197,14 +192,14 @@ public class DriveDemo extends Stage implements KeyListener {
         //TODO: Possibly handle both modifiers and hazards into the actor array
 
         // Updating hazards position
-        for (int i = 0; i < actors.size(); i++) {
-            Actor actor = actors.get(i);
-            actor.update();
-            if (actor.getY() > Stage.HEIGHT){
-                actor.setMarkedForRemoval(true);
+        for (int i = 0; i < hazards.size(); i++) {
+            Hazards hazard = hazards.get(i);
+            hazard.update();
+            if (hazard.getY() > Stage.HEIGHT){
+                hazard.setMarkedForRemoval(true);
             }
-            if (actor.isMarkedForRemoval()){
-                actors.remove(i);
+            if (hazard.isMarkedForRemoval()){
+                hazards.remove(i);
             }
         }
 
@@ -219,43 +214,14 @@ public class DriveDemo extends Stage implements KeyListener {
     }
 
     private void checkCollision() {
-        for (int i = 0; i < actors.size(); i++) {
-            Actor actor = actors.get(i);
-            if( car.getBounds().intersects(actor.getBounds()) ) {
-
-                if ( actor instanceof Hazards ){
-                    Hazards hazard = (Hazards) actor;
-                    car.reduceHealth(hazard.dealDamage());
-                    if (car.getHealth() <= 0) {
-                        gameOver();
-                    }
-
-                    if( splat == null) {
-                        splat = new Splat(this);
-                        splat.setX(car.getX());
-                        splat.setY(car.getY());
-
-                        splatFrames = 0;
-                    } // end splat
-
-                } // end instance of Hazards
-
-                //TODO: Add actor instance of modifier
-                else if ( actor instanceof Modifiers ){
-                    Modifiers modifier = (Modifiers) actor;
-                    if ( modifier.getModifierType().contains("health") ){
-//                        car.setHealth(car.getHealth() + modifier.getHealthIncrease());
-                        car.reduceHealth( - modifier.getHealthIncrease() );
-                    }
-                    else if ( modifier.getModifierType().contains("speed") ){
-                        car.setModifier( modifier.getSpeedIncrease() );
-                    }
+        for (int i = 0; i < hazards.size(); i++) {
+            Hazards hazard = hazards.get(i);
+            if( car.getBounds().intersects(hazard.getBounds())) {
+                car.reduceHealth(hazard.dealDamage());
+                if (car.getHealth() <= 0) {
+                    gameOver();
                 }
 
-                actor.setMarkedForRemoval(true);
-            } // end car intersects
-          
-          
                 hazard.setMarkedForRemoval(true);
                 if( splat == null) {
                     splat = new Splat(this);
@@ -305,30 +271,14 @@ public class DriveDemo extends Stage implements KeyListener {
 
         while(true) {
             //TODO: Change 900 to a dynamic variable that adjusts depending on score
-
-            // Spawn hazards
-            if ( randomValueSelector.nextInt(1000) > 990 ) {
+            if (randomValueSelector.nextInt(1000) > 990) {
                 int currentHazardSelection = randomValueSelector.nextInt(100);
-                if ( currentHazardSelection < 80 ) {
+                if (currentHazardSelection < 80) {
                     spawnHazard("pothole");
-                } else if ( currentHazardSelection > 80 ) {
+                } else if (currentHazardSelection > 80) {
                     spawnHazard("moose");
                 }
-            } // end spawn hazards
-
-            // Spawn modifiers
-            if ( randomValueSelector.nextInt(1000) > 990 ) {
-                int currentHazardSelection = randomValueSelector.nextInt(100);
-                if ( currentHazardSelection < 20 ) {
-                    spawnModifier("health_s");
-                } else if ( currentHazardSelection > 80 ) {
-                    spawnModifier("health_l");
-                } else if ( currentHazardSelection > 40 && currentHazardSelection < 50) {
-                    spawnModifier("speed_increase");
-                }
-            } // end spawn modifiers
-
-
+            }
             // Debug code - Will use this in the future for testing actor array
             //System.out.println(hazards.size());
             long startTime = System.currentTimeMillis();
