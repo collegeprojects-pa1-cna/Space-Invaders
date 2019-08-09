@@ -11,7 +11,6 @@ public class HealthBar extends Actor {
 
         sprites = new String[]{"health_100.png"};
         frame = 0;
-
     }
 
     public void updateHealthbar(int health) {

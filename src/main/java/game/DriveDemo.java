@@ -1,13 +1,12 @@
 package game;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,6 +35,13 @@ public class DriveDemo extends Stage implements KeyListener {
     private int splatFrames;
     private Car car;
     private HealthBar healthBar;
+
+    private List<Light> leftLights = new ArrayList<>();
+    private List<Light> rightLights = new ArrayList<>();
+    private Light light;
+    private Light light2;
+    private Light light3;
+    private Light light4;
 
     JPanel gameOverPanel;
 
@@ -90,13 +96,18 @@ public class DriveDemo extends Stage implements KeyListener {
         hazards = new ArrayList<Hazards>();
 //        hazards = new Hazards(this, "moose");
         spawnHazard("pothole");
+        light = new Light(this,300, 300, 0, 0, -90, 0);
+        light2 = new Light(this,300, 300, 0, 0, 520, 0);
+        light3 = new Light(this,300, 300, 0, 0, -90, -1000);
+        light4 = new Light(this,300, 300, 0, 0, 520, -1000);
     }
 
     public void paintWorld() {
 
         //get the graphics from the buffer
-        Graphics g = strategy.getDrawGraphics();
+        Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
         //init image to background
+
         g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
 
@@ -105,7 +116,6 @@ public class DriveDemo extends Stage implements KeyListener {
         g.drawImage(ResourceLoader.getInstance().getSprite("road-hotline.png"), 0, roadVerticalOffset - Stage.HEIGHT, this);
         g.drawImage(ResourceLoader.getInstance().getSprite("road-hotline.png"), 0, roadVerticalOffset, this);
 
-        //load subimage from the background
 
         //paint the actors
         for (int i = 0; i < hazards.size(); i++) {
@@ -114,6 +124,18 @@ public class DriveDemo extends Stage implements KeyListener {
         }
 
         car.paint(g);
+
+        float transparentAlpha = (float) 0.4;
+        float opaqueAlpha = (float) 1.0; //draw half transparent
+        AlphaComposite transparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,transparentAlpha);
+        AlphaComposite opaque = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,opaqueAlpha);
+        g.setComposite(transparent);
+        light.paint(g);
+        light2.paint(g);
+        light3.paint(g);
+        light4.paint(g);
+        g.setComposite(opaque);
+
         healthBar.paint(g);
 
 
@@ -152,6 +174,10 @@ public class DriveDemo extends Stage implements KeyListener {
         roadVerticalOffset %= Stage.HEIGHT;
 
         car.update();
+        light.update();
+        light2.update();
+        light3.update();
+        light4.update();
         healthBar.updateHealthbar(car.getHealth());
 
         //TODO: Possibly handle both modifiers and hazards into the actor array
