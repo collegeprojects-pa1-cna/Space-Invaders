@@ -39,8 +39,12 @@ public class DriveDemo extends Stage implements KeyListener {
     private Light light3;
     private Light light4;
 
+    private MenuButton resumeButton;
     private MenuButton retryButton;
     private MenuButton quitButton;
+
+    private MenuButton pausedBanner;
+    private MenuButton gameOverBanner;
 
     public DriveDemo() {
         //init the UI
@@ -86,29 +90,28 @@ public class DriveDemo extends Stage implements KeyListener {
         roadVerticalOffset = 0;
     }
 
-
-
     public void initWorld() {
         car = new Car(this, Car.ePlayerNumber.PN_ONE);
         healthBar = new HealthBar(this, 128, 32, 0, 0);
         hazards = new ArrayList<Hazards>();
-//        hazards = new Hazards(this, "moose");
         spawnHazard("pothole");
         light = new Light(this,300, 300, 0, 0, -90, 0);
         light2 = new Light(this,300, 300, 0, 0, 520, -500);
         light3 = new Light(this,300, 300, 0, 0, -90, -1500);
         light4 = new Light(this,300, 300, 0, 0, 520, -2000);
 
+        resumeButton = new MenuButton(this, 256, 128, Stage.WIDTH/3 - 13, 450, "resume");
         retryButton = new MenuButton(this, 256, 128, Stage.WIDTH/3 - 13, 450, "retry");
         quitButton = new MenuButton(this, 256, 128, Stage.WIDTH/3 - 13, 600, "quit");
+
+        pausedBanner = new MenuButton(this, 319, 55, Stage.WIDTH /3 - 42, 300, "paused_banner");
+        gameOverBanner = new MenuButton(this, 506, 55, Stage.WIDTH /8 + 20, 300, "gameover_banner");
 
         //get the graphics from the buffer
         g = (Graphics2D) strategy.getDrawGraphics();
     }
 
     public void paintWorld() {
-
-        //init image to background
 
         g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
@@ -128,7 +131,6 @@ public class DriveDemo extends Stage implements KeyListener {
         AlphaComposite transparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,transparentAlpha);
         AlphaComposite opaque = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,opaqueAlpha);
         g.setComposite(transparent);
-
         light.paint(g);
         light2.paint(g);
         light3.paint(g);
@@ -141,10 +143,18 @@ public class DriveDemo extends Stage implements KeyListener {
             splat.paint(g);
         }
 
-        if(isGameOver()){
+        if(isGameOver()) {
+            gameOverBanner.paint(g);
             retryButton.paint(g);
             quitButton.paint(g);
         }
+
+        if (isPaused()) {
+            pausedBanner.paint(g);
+            resumeButton.paint(g);
+            quitButton.paint(g);
+        }
+
         paintFPS(g);
         //swap buffer
         strategy.show();
@@ -174,7 +184,14 @@ public class DriveDemo extends Stage implements KeyListener {
 
     public void updateWorld() {
         if(isGameOver()){
+            gameOverBanner.update();
             retryButton.update();
+            quitButton.update();
+        }
+
+        if (isPaused()) {
+            pausedBanner.update();
+            resumeButton.update();
             quitButton.update();
         }
 
@@ -255,9 +272,9 @@ public class DriveDemo extends Stage implements KeyListener {
         keyPressedHandlerLeft.action = InputHandler.Action.PRESS;
         keyReleasedHandlerLeft = new InputHandler(this, car);
         keyReleasedHandlerLeft.action = InputHandler.Action.RELSEASE;
-        //addKeyListener(this);*/
-        //game();
+    }
 
+    public void quit() {
 
     }
 
@@ -271,7 +288,7 @@ public class DriveDemo extends Stage implements KeyListener {
 
         while(true) {
             //TODO: Change 900 to a dynamic variable that adjusts depending on score
-            if (randomValueSelector.nextInt(1000) > 990) {
+            if ((randomValueSelector.nextInt(1000) > 990) && (!isGameOver() && !isPaused())) {
                 int currentHazardSelection = randomValueSelector.nextInt(100);
                 if (currentHazardSelection < 80) {
                     spawnHazard("pothole");
@@ -285,13 +302,13 @@ public class DriveDemo extends Stage implements KeyListener {
 
             checkCollision();
 
-            if( !isGameOver()) {
+            if(!isGameOver() && !isPaused()){
                 updateWorld();
             }
 
             paintWorld();
 
-            if (isGameOver()){
+            if (isGameOver() && isPaused()){
                 continue;
             }
 
@@ -317,6 +334,16 @@ public class DriveDemo extends Stage implements KeyListener {
         if( e.getKeyCode() == KeyEvent.VK_K) {
             Actor.debugCollision = !Actor.debugCollision;
         }
+        else if( e.getKeyCode() == KeyEvent.VK_X) {
+            if (!isPaused()) {
+                endGame();
+            }
+        }
+        else if( e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            if (!isGameOver()) {
+                pauseGame();
+            }
+        }
     }
 
     public void keyReleased(KeyEvent e) {
@@ -333,10 +360,13 @@ public class DriveDemo extends Stage implements KeyListener {
             if ((retryButton.contains(e.getX(), e.getY())) && isGameOver()) {
                 System.out.println("Clicked retry");
                 reset();
-
             }
-            else if ((quitButton.contains(e.getX(), e.getY())) && isGameOver()) {
+            else if ((quitButton.contains(e.getX(), e.getY())) && (isGameOver() || isPaused())) {
                 System.out.println("Clicked quit");
+            }
+            else if (resumeButton.contains(e.getX(), e.getY()) && isPaused()) {
+                System.out.println("Clicked resume");
+                unPauseGame();
             }
         }
 
