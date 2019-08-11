@@ -19,6 +19,9 @@ public class HealthBar extends Actor {
             sprites[0] = "health_0.png";
         }
         else {
+            if (health > 100){
+                health = 100;
+            }
             sprites[0] = "health_" + health + ".png";
         }
     }
