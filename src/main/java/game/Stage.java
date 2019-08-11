@@ -17,17 +17,30 @@ public class Stage extends Canvas implements ImageObserver {
 	
 	protected boolean gameWon = false;
 	protected boolean gameOver = false;
+	protected boolean paused = false;
 	public List<Actor> actors = new ArrayList<Actor>();	
 	
 	public Stage() {
 	}
-	
+
+	public void pauseGame() {
+		paused = true;
+	}
+
+	public void unPauseGame() {
+		paused = false;
+	}
+
 	public void endGame() {
 		gameOver = true;
 	}
 	
 	public boolean isGameOver() {
 		return gameOver;
+	}
+
+	public boolean isPaused() {
+		return paused;
 	}
 	
 	public boolean imageUpdate(Image img, int infoflags, int x, int y,

@@ -15,6 +15,6 @@ public class MenuButton extends Actor {
     }
 
     public boolean contains(int x, int y) {
-        return ((x > posX && x <= posX + buttonWidth) && (y > posY && y < y + buttonHeight));
+        return ((x > posX && x <= posX + buttonWidth) && (y > posY && y <= posY + buttonHeight));
     }
 }
