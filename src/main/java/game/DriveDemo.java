@@ -39,6 +39,10 @@ public class DriveDemo extends Stage implements KeyListener {
     private Light light3;
     private Light light4;
 
+    private MenuButton mainScreen;
+    private MenuButton playButton;
+    private MenuButton closeButton;
+
     private MenuButton resumeButton;
     private MenuButton retryButton;
     private MenuButton quitButton;
@@ -72,7 +76,6 @@ public class DriveDemo extends Stage implements KeyListener {
             }
         });
 
-
         addKeyListener(this);
         addMouseListener(new MouseListen());
 
@@ -99,6 +102,10 @@ public class DriveDemo extends Stage implements KeyListener {
         light2 = new Light(this,300, 300, 0, 0, 520, -500);
         light3 = new Light(this,300, 300, 0, 0, -90, -1500);
         light4 = new Light(this,300, 300, 0, 0, 520, -2000);
+
+        mainScreen = new MenuButton(this, 690, 900, 15, 30, "main_menu");
+        playButton = new MenuButton(this, 256, 128, Stage.WIDTH/3 - 13, 450, "play");
+        closeButton = new MenuButton(this, 256, 128, Stage.WIDTH/3 - 13, 600, "quit_game");
 
         resumeButton = new MenuButton(this, 256, 128, Stage.WIDTH/3 - 13, 450, "resume");
         retryButton = new MenuButton(this, 256, 128, Stage.WIDTH/3 - 13, 450, "retry");
@@ -155,6 +162,12 @@ public class DriveDemo extends Stage implements KeyListener {
             quitButton.paint(g);
         }
 
+        if (isMainMenuDisplaying()) {
+            mainScreen.paint(g);
+            playButton.paint(g);
+            closeButton.paint(g);
+        }
+
         paintFPS(g);
         //swap buffer
         strategy.show();
@@ -196,6 +209,12 @@ public class DriveDemo extends Stage implements KeyListener {
             pausedBanner.update();
             resumeButton.update();
             quitButton.update();
+        }
+
+        if (isMainMenuDisplaying()) {
+            mainScreen.update();
+            playButton.update();
+            closeButton.update();
         }
 
         roadVerticalOffset += 10;
@@ -308,7 +327,7 @@ public class DriveDemo extends Stage implements KeyListener {
 
         while(true) {
             //TODO: Change 900 to a dynamic variable that adjusts depending on score
-            if ((randomValueSelector.nextInt(1000) > 990) && (!isGameOver() && !isPaused())) {
+            if ((randomValueSelector.nextInt(1000) > 990) && (!isGameOver() && !isPaused() && !isMainMenuDisplaying())) {
                 int currentHazardSelection = randomValueSelector.nextInt(100);
                 if (currentHazardSelection < 80) {
                     spawnHazard("pothole");
@@ -335,13 +354,13 @@ public class DriveDemo extends Stage implements KeyListener {
 
             checkCollision();
 
-            if(!isGameOver() && !isPaused()){
+            if(!isGameOver() && !isPaused() && !isMainMenuDisplaying()){
                 updateWorld();
             }
 
             paintWorld();
 
-            if (isGameOver() && isPaused()){
+            if (isGameOver() && isPaused() && isMainMenuDisplaying()){
                 continue;
             }
 
@@ -368,7 +387,7 @@ public class DriveDemo extends Stage implements KeyListener {
             Actor.debugCollision = !Actor.debugCollision;
         }
         else if( e.getKeyCode() == KeyEvent.VK_X) {
-            if (!isPaused()) {
+            if (!isPaused() && !isMainMenuDisplaying()) {
                 endGame();
             }
         }
@@ -393,16 +412,26 @@ public class DriveDemo extends Stage implements KeyListener {
 
         @Override
         public void mouseClicked(MouseEvent e) {
+            if (playButton.contains(e.getX(), e.getY()) && (isMainMenuDisplaying())) {
+                System.out.println("Clicked play");
+                hideMainMenu();
+                reset();
+            }
             if ((retryButton.contains(e.getX(), e.getY())) && isGameOver()) {
                 System.out.println("Clicked retry");
                 reset();
             }
-            else if ((quitButton.contains(e.getX(), e.getY())) && (isGameOver() || isPaused())) {
+            else if ((quitButton.contains(e.getX(), e.getY())) && (isGameOver() || isPaused()) && !isMainMenuDisplaying()) {
+                displayMainScreen();
                 System.out.println("Clicked quit");
             }
             else if (resumeButton.contains(e.getX(), e.getY()) && isPaused()) {
                 System.out.println("Clicked resume");
                 unPauseGame();
+            }
+            else if (closeButton.contains(e.getX(), e.getY()) && isMainMenuDisplaying()) {
+                System.out.println("Clicked exit game");
+                System.exit(0);
             }
         }
 
