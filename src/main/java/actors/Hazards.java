@@ -14,15 +14,16 @@ public class Hazards extends Actor {
     // Attributes
     private String hazardType;
     private int damage;
+    Random rand;
 
     //TODO: Update this so it takes in posX and posY
     public Hazards(Stage canvas, String hazardType, int width, int height, int collisionW, int collisionH) {
         super(canvas, width, height, collisionW, collisionH);
-        Random randomInt = new Random();
+        rand = new Random();
 
         vy = 10;
 
-        posX = randomInt.nextInt(500);
+        posX = rand.nextInt(500);
         posY = -500;
 
         potholeImages = new ArrayList<String>();
@@ -64,9 +65,15 @@ public class Hazards extends Actor {
             setDamage(100); // moose damage value
             frameSpeed = 10;
             setSprites(mooseImages);
+            vx = -7;
+            posY = 0;
+            posX = 600;
         } else if ("moose_rev".equals(hazardType)) {
             setDamage(100);
             frameSpeed = 10;
+            vx = 7;
+            posY = 0;
+            posX = 0;
             setSprites(mooseImagesRev);
         }
         else {

@@ -356,7 +356,12 @@ public class DriveDemo extends Stage implements KeyListener {
                 if (currentHazardSelection < 80) {
                     spawnHazard("pothole", 80, 80, 80, 80);
                 } else if (currentHazardSelection > 80) {
-                    spawnHazard("moose", 128, 128, 128, 128);
+                    int mooseSide = randomValueSelector.nextInt(2);
+                    if (mooseSide == 0) {
+                        spawnHazard("moose", 128, 128, 128, 128);
+                    } else {
+                        spawnHazard("moose_rev",128, 128, 128, 128);
+                    }
                 }
             } // end spawn hazards
 
