@@ -65,14 +65,14 @@ public class Hazards extends Actor {
             setDamage(100); // moose damage value
             frameSpeed = 10;
             setSprites(mooseImages);
-            vx = -7;
-            posY = 0;
+            vx = (rand.nextInt(4) + 4) * -1 ; // Range: 4 - 7 (inclusive)
+            posY = rand.nextInt(150);
             posX = 600;
         } else if ("moose_rev".equals(hazardType)) {
             setDamage(100);
             frameSpeed = 10;
-            vx = 7;
-            posY = 0;
+            vx = rand.nextInt(4) + 4; // Range: 4 - 7 (inclusive)
+            posY = rand.nextInt(150);
             posX = 0;
             setSprites(mooseImagesRev);
         }
