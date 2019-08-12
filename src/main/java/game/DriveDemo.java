@@ -352,7 +352,7 @@ public class DriveDemo extends Stage implements KeyListener {
             } // end spawn hazards
 
             // Spawn modifiers
-            if ( randomValueSelector.nextInt(1000) > 990 ) {
+            if ((randomValueSelector.nextInt(1000) > 990)  && (!isGameOver() && !isPaused() && !isMainMenuDisplaying())) {
                 int currentHazardSelection = randomValueSelector.nextInt(100);
                 if ( currentHazardSelection < 20 ) {
                     spawnModifier("health_s");
@@ -377,6 +377,15 @@ public class DriveDemo extends Stage implements KeyListener {
 
             if (isGameOver() && isPaused() && isMainMenuDisplaying()){
                 continue;
+            }
+
+            if (isGameOver() || isMainMenuDisplaying()){
+                for (int i = 0; i < actors.size(); i++) {
+                    Actor actor = actors.get(i);
+                    if (actors.size() > 0){
+                        actor.setMarkedForRemoval(true);
+                    }
+                }
             }
 
             usedTime = System.currentTimeMillis() - startTime;
