@@ -25,6 +25,8 @@ public class DriveDemo extends Stage implements KeyListener {
     Graphics2D g;
 
     private int fpsValueCounter = 0;
+    private int coolDownFrames;
+    private int[] coolDownAmounts;
 
     private Splat splat;
     private int splatFrames;
