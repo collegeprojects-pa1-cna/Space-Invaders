@@ -49,11 +49,11 @@ public class Car extends Actor implements KeyboardControllable {
         vx *= 0.9;
         vy *= 0.9;
 
-        if( posX > Stage.WIDTH - getWidth() ) {
-            posX = Stage.WIDTH - getWidth();
+        if( posX > Stage.WIDTH - getWidth() + 24 ) {
+            posX = Stage.WIDTH - getWidth() + 24;
         }
-        else if( posX < 0 ) {
-            posX = 0;
+        else if( posX < -40 ) {
+            posX = -40;
         }
 
         if( posY > Stage.HEIGHT - getHeight() ) {
