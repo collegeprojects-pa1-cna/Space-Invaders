@@ -274,6 +274,9 @@ public class DriveDemo extends Stage implements KeyListener {
                 if ( actor instanceof Hazards ){
                     Hazards hazard = (Hazards) actor;
                     car.reduceHealth(hazard.dealDamage());
+                    if ( ((Hazards) actor).getHazardType().equals("pothole") ){
+                        ((Hazards) actor).setDamage(0);
+                    }
                     if (car.getHealth() <= 0) {
                         gameOver();
                     }
@@ -291,6 +294,7 @@ public class DriveDemo extends Stage implements KeyListener {
                 //TODO: Add actor instance of modifier
                 else if ( actor instanceof Modifiers ){
                     Modifiers modifier = (Modifiers) actor;
+
                     if ( modifier.getModifierType().contains("health") ){
                         car.setHealth(car.getHealth() + modifier.getHealthIncrease());
                     }
@@ -299,11 +303,16 @@ public class DriveDemo extends Stage implements KeyListener {
                     }
                     car.changeScore(modifier.getPoints());
                 }
-                actor.setMarkedForRemoval(true);
+
+                if ( actor instanceof Hazards && ((Hazards) actor).getHazardType().equals("pothole") ) {
+                    actor.setMarkedForRemoval(false);
+                } else {
+                    actor.setMarkedForRemoval(true);
+                } // end marked for removal
 
             } // end actor intersect
-        }
-    }
+        } // end looping through actor array
+    } // end collision check
 
     private void gameOver(){
         endGame();

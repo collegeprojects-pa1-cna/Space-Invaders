@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Modifiers extends Actor {
     // Attributes
-    String modifierType;
+    private String modifierType;
     int healthIncrease;
     int points;
     double speedIncrease;
