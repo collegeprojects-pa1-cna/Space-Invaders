@@ -7,6 +7,7 @@ import java.util.Random;
 public class Hazards extends Actor {
 
     // Attributes
+    private String hazardType;
     private int damage;
 
     //TODO: Update this so it takes in posX and posY
@@ -30,6 +31,7 @@ public class Hazards extends Actor {
     private void setHazard(String hazardType){
         //TODO: Possibly make hazards decrease score?
         sprites = new String[] {hazardType + ".png"};
+        this.hazardType = hazardType;
 
         if ("pothole".equals(hazardType)) {
             setDamage(10); // pothole damage value
@@ -40,11 +42,15 @@ public class Hazards extends Actor {
         }
     }
 
+    public String getHazardType(){
+        return hazardType;
+    }
+
     /**
      * Setter for damage attribute
      * @param damage
      */
-    private void setDamage(int damage){
+    public void setDamage(int damage){
         this.damage = damage;
     }
 
