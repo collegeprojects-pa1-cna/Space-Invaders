@@ -3,6 +3,7 @@ package game;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
+import java.util.List;
 import java.util.Random;
 
 
@@ -94,7 +95,6 @@ public class DriveDemo extends Stage implements KeyListener {
         car = new Car(this, Car.ePlayerNumber.PN_ONE);
         healthBar = new HealthBar(this, 128, 32, 0, 0);
 
-        spawnHazard("pothole");
         light = new Light(this,300, 300, 0, 0, -90, 0);
         light2 = new Light(this,300, 300, 0, 0, 520, -500);
         light3 = new Light(this,300, 300, 0, 0, -90, -1500);
@@ -196,8 +196,8 @@ public class DriveDemo extends Stage implements KeyListener {
      * Takes in desired hazard type as a string, creates a new hazard object and appends it to the hazards array.
      * @param hazardType
      */
-    private void spawnHazard(String hazardType){
-        actors.add(new Hazards(this, hazardType));
+    private void spawnHazard(String hazardType, int width, int height, int colW, int colH){
+        actors.add(new Hazards(this, hazardType, width, height, colW, colH));
     }
 
     private void spawnModifier(String modifierType){
@@ -345,9 +345,9 @@ public class DriveDemo extends Stage implements KeyListener {
             if ((randomValueSelector.nextInt(1000) > 990) && (!isGameOver() && !isPaused() && !isMainMenuDisplaying())) {
                 int currentHazardSelection = randomValueSelector.nextInt(100);
                 if (currentHazardSelection < 80) {
-                    spawnHazard("pothole");
+                    spawnHazard("pothole", 80, 80, 80, 80);
                 } else if (currentHazardSelection > 80) {
-                    spawnHazard("moose");
+                    spawnHazard("moose", 128, 128, 128, 128);
                 }
             } // end spawn hazards
 
