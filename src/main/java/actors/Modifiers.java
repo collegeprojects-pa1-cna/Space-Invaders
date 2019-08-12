@@ -35,7 +35,7 @@ public class Modifiers extends Actor {
         this.modifierType = modifierType;
 
         if ("health_s".equals(modifierType)) {
-            setHealthIncrease(20); // pothole damage value
+            setHealthIncrease(10); // pothole damage value
             setPoints(20);
         } else if ("health_l".equals(modifierType)) {
             setHealthIncrease(100); // moose damage value

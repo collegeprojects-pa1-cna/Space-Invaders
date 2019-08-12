@@ -19,6 +19,7 @@ public class Car extends Actor implements KeyboardControllable {
     Map<String, Boolean> keysPressed = new HashMap<String, Boolean>();
     int health;
     double modifier = 1;
+    private int score = 0;
 
     public enum ePlayerNumber {
         PN_ONE,
@@ -138,8 +139,28 @@ public class Car extends Actor implements KeyboardControllable {
         this.modifier += modifier;
     }
 
+    /**
+     * Set health method takes in an integer value and only allows the cars health to be boosted
+     * past 100 as long as the health of the car is less than or equal to 100.
+     * This effect causes only the large health modifiers to have potential moose negating effects
+     * while the smaller health will only provide points at low health.
+     * @param health
+     */
     public void setHealth(int health) {
-        this.health = health;
+        if (this.health <= 100 && health == 100){
+            this.health = health;
+        }
+        else if (this.health <= 90 ) {
+            this.health = health;
+        }
+    }
+
+    public void changeScore(int score) {
+        this.score += score;
+    }
+
+    public int getScore() {
+        return score;
     }
 
     public void reduceHealth(int damage) {

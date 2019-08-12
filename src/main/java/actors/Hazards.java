@@ -28,8 +28,7 @@ public class Hazards extends Actor {
      * @param hazardType
      */
     private void setHazard(String hazardType){
-        //TODO: Change this to call a hashmap or something similar instead of directly plunking the name to the object call
-        // this should enable quick assigning of stats
+        //TODO: Possibly make hazards decrease score?
         sprites = new String[] {hazardType + ".png"};
 
         if ("pothole".equals(hazardType)) {
