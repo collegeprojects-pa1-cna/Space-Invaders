@@ -37,6 +37,13 @@ public class Hazards extends Actor {
         mooseImages.add("moose_4");
         mooseImages.add("moose_5");
 
+        mooseImagesRev.add("moose_rev_0");
+        mooseImagesRev.add("moose_rev_1");
+        mooseImagesRev.add("moose_rev_2");
+        mooseImagesRev.add("moose_rev_3");
+        mooseImagesRev.add("moose_rev_4");
+        mooseImagesRev.add("moose_rev_5");
+
         setHazard(hazardType);
     }
 
@@ -52,7 +59,12 @@ public class Hazards extends Actor {
             setDamage(100); // moose damage value
             frameSpeed = 10;
             setSprites(mooseImages);
-        } else {
+        } else if ("moose_rev".equals(hazardType)) {
+            setDamage(100);
+            frameSpeed = 10;
+            setSprites(mooseImagesRev);
+        }
+        else {
             setDamage(10); // default value
         }
     }
