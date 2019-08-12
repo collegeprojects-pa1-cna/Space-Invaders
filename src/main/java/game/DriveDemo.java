@@ -3,8 +3,6 @@ package game;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 
@@ -25,8 +23,7 @@ public class DriveDemo extends Stage implements KeyListener {
     public int roadVerticalOffset;
     Graphics2D g;
 
-    //hazardsList
-    private List<Hazards> hazards = new ArrayList<Hazards>();
+    private int fpsValueCounter = 0;
 
     private Splat splat;
     private int splatFrames;
@@ -96,7 +93,7 @@ public class DriveDemo extends Stage implements KeyListener {
     public void initWorld() {
         car = new Car(this, Car.ePlayerNumber.PN_ONE);
         healthBar = new HealthBar(this, 128, 32, 0, 0);
-        hazards = new ArrayList<Hazards>();
+
         spawnHazard("pothole");
         light = new Light(this,300, 300, 0, 0, -90, 0);
         light2 = new Light(this,300, 300, 0, 0, 520, -500);
@@ -132,6 +129,7 @@ public class DriveDemo extends Stage implements KeyListener {
         }
 
         car.paint(g);
+        paintScore(g);
 
         float transparentAlpha = (float) 0.4;
         float opaqueAlpha = (float) 1.0; //draw half transparent
@@ -183,6 +181,14 @@ public class DriveDemo extends Stage implements KeyListener {
             g.drawString("--- fps",Stage.HEIGHT-50,0);
     }
 
+    public void paintScore(Graphics g) {
+        g.setFont(new Font("Impact", Font.ITALIC,30));
+//        g.setColor(Color.green);
+//        g.drawString("Score: ",20,20);
+        g.setColor(Color.CYAN);
+        g.drawString("" + car.getScore(), 50, 30);
+    }
+
     public void paint(Graphics g) {}
 
     /**
@@ -216,6 +222,14 @@ public class DriveDemo extends Stage implements KeyListener {
             playButton.update();
             closeButton.update();
         }
+
+        // Extremely hacky - BAD PRACTICE!!
+        // Score per second
+        if (fpsValueCounter >= 59){
+            fpsValueCounter = 0;
+            car.changeScore(1);
+        }
+        fpsValueCounter ++;
 
         roadVerticalOffset += 10;
         roadVerticalOffset %= Stage.HEIGHT;
@@ -278,12 +292,12 @@ public class DriveDemo extends Stage implements KeyListener {
                 else if ( actor instanceof Modifiers ){
                     Modifiers modifier = (Modifiers) actor;
                     if ( modifier.getModifierType().contains("health") ){
-//                        car.setHealth(car.getHealth() + modifier.getHealthIncrease());
-                        car.reduceHealth( - modifier.getHealthIncrease() );
+                        car.setHealth(car.getHealth() + modifier.getHealthIncrease());
                     }
                     else if ( modifier.getModifierType().contains("speed") ){
                         car.setModifier( modifier.getSpeedIncrease() );
                     }
+                    car.changeScore(modifier.getPoints());
                 }
                 actor.setMarkedForRemoval(true);
 
@@ -326,6 +340,7 @@ public class DriveDemo extends Stage implements KeyListener {
 //===================================================GAME LOOP==========================================================
 
         while(true) {
+//            System.out.println(car.getHealth()); // debug code
             //TODO: Change 900 to a dynamic variable that adjusts depending on score
             if ((randomValueSelector.nextInt(1000) > 990) && (!isGameOver() && !isPaused() && !isMainMenuDisplaying())) {
                 int currentHazardSelection = randomValueSelector.nextInt(100);
