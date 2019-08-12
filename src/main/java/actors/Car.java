@@ -147,7 +147,7 @@ public class Car extends Actor implements KeyboardControllable {
      * @param health
      */
     public void setHealth(int health) {
-        if (this.health <= 100 && health >= 100){
+        if (this.health <= 100 && (health - getHealth() >= 100) ){
             this.health = health;
             System.out.println("<= 100" + health);
         }
