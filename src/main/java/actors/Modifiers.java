@@ -63,7 +63,7 @@ public class Modifiers extends Actor {
     }
 
     /**
-     * Setter for damage attribute
+     * Setter for health attribute
      * @param healthIncrease
      */
     private void setHealthIncrease(int healthIncrease){

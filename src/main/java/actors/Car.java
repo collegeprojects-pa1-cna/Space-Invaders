@@ -130,12 +130,16 @@ public class Car extends Actor implements KeyboardControllable {
         }
     }
 
+    public int getHealth() {
+        return health;
+    }
+
     public void setModifier(double modifier){
         this.modifier += modifier;
     }
 
-    public int getHealth() {
-        return health;
+    public void setHealth(int health) {
+        this.health = health;
     }
 
     public void reduceHealth(int damage) {

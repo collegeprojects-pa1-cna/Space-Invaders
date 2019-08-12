@@ -1,10 +1,7 @@
 package game;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +39,12 @@ public class DriveDemo extends Stage implements KeyListener {
     private Light light3;
     private Light light4;
 
+    private MenuButton resumeButton;
     private MenuButton retryButton;
     private MenuButton quitButton;
+
+    private MenuButton pausedBanner;
+    private MenuButton gameOverBanner;
 
     public DriveDemo() {
         //init the UI
@@ -73,6 +74,7 @@ public class DriveDemo extends Stage implements KeyListener {
 
 
         addKeyListener(this);
+        addMouseListener(new MouseListen());
 
         //create a double buffer
         createBufferStrategy(2);
@@ -88,21 +90,22 @@ public class DriveDemo extends Stage implements KeyListener {
         roadVerticalOffset = 0;
     }
 
-
-
     public void initWorld() {
         car = new Car(this, Car.ePlayerNumber.PN_ONE);
         healthBar = new HealthBar(this, 128, 32, 0, 0);
         hazards = new ArrayList<Hazards>();
-//        hazards = new Hazards(this, "moose");
         spawnHazard("pothole");
         light = new Light(this,300, 300, 0, 0, -90, 0);
         light2 = new Light(this,300, 300, 0, 0, 520, -500);
         light3 = new Light(this,300, 300, 0, 0, -90, -1500);
         light4 = new Light(this,300, 300, 0, 0, 520, -2000);
 
+        resumeButton = new MenuButton(this, 256, 128, Stage.WIDTH/3 - 13, 450, "resume");
         retryButton = new MenuButton(this, 256, 128, Stage.WIDTH/3 - 13, 450, "retry");
         quitButton = new MenuButton(this, 256, 128, Stage.WIDTH/3 - 13, 600, "quit");
+
+        pausedBanner = new MenuButton(this, 319, 55, Stage.WIDTH /3 - 42, 300, "paused_banner");
+        gameOverBanner = new MenuButton(this, 506, 55, Stage.WIDTH /8 + 20, 300, "gameover_banner");
 
         //get the graphics from the buffer
         g = (Graphics2D) strategy.getDrawGraphics();
@@ -110,17 +113,15 @@ public class DriveDemo extends Stage implements KeyListener {
 
     public void paintWorld() {
 
-                //init image to background
-
         g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
         g.drawImage(ResourceLoader.getInstance().getSprite("road-hotline.png"), 0, roadVerticalOffset - Stage.HEIGHT, this);
         g.drawImage(ResourceLoader.getInstance().getSprite("road-hotline.png"), 0, roadVerticalOffset, this);
 
         //paint the actors
-        for (int i = 0; i < actors.size(); i++) {
-            Actor actor = actors.get(i);
-            actor.paint(g);
+        for (int i = 0; i < hazards.size(); i++) {
+            Hazards hazard = hazards.get(i);
+            hazard.paint(g);
         }
 
         car.paint(g);
@@ -130,7 +131,6 @@ public class DriveDemo extends Stage implements KeyListener {
         AlphaComposite transparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,transparentAlpha);
         AlphaComposite opaque = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,opaqueAlpha);
         g.setComposite(transparent);
-
         light.paint(g);
         light2.paint(g);
         light3.paint(g);
@@ -143,10 +143,18 @@ public class DriveDemo extends Stage implements KeyListener {
             splat.paint(g);
         }
 
-        if(isGameOver()){
+        if(isGameOver()) {
+            gameOverBanner.paint(g);
             retryButton.paint(g);
             quitButton.paint(g);
         }
+
+        if (isPaused()) {
+            pausedBanner.paint(g);
+            resumeButton.paint(g);
+            quitButton.paint(g);
+        }
+
         paintFPS(g);
         //swap buffer
         strategy.show();
@@ -171,17 +179,19 @@ public class DriveDemo extends Stage implements KeyListener {
      */
     private void spawnHazard(String hazardType){
         Hazards hazard = new Hazards(this, hazardType);
-        actors.add(hazard);
-    }
-
-    private void spawnModifier(String modifierType){
-        Modifiers modifier = new Modifiers(this, modifierType);
-        actors.add(modifier);
+        hazards.add(hazard);
     }
 
     public void updateWorld() {
         if(isGameOver()){
+            gameOverBanner.update();
             retryButton.update();
+            quitButton.update();
+        }
+
+        if (isPaused()) {
+            pausedBanner.update();
+            resumeButton.update();
             quitButton.update();
         }
 
@@ -199,14 +209,14 @@ public class DriveDemo extends Stage implements KeyListener {
         //TODO: Possibly handle both modifiers and hazards into the actor array
 
         // Updating hazards position
-        for (int i = 0; i < actors.size(); i++) {
-            Actor actor = actors.get(i);
-            actor.update();
-            if (actor.getY() > Stage.HEIGHT){
-                actor.setMarkedForRemoval(true);
+        for (int i = 0; i < hazards.size(); i++) {
+            Hazards hazard = hazards.get(i);
+            hazard.update();
+            if (hazard.getY() > Stage.HEIGHT){
+                hazard.setMarkedForRemoval(true);
             }
-            if (actor.isMarkedForRemoval()){
-                actors.remove(i);
+            if (hazard.isMarkedForRemoval()){
+                hazards.remove(i);
             }
         }
 
@@ -221,41 +231,24 @@ public class DriveDemo extends Stage implements KeyListener {
     }
 
     private void checkCollision() {
-        for (int i = 0; i < actors.size(); i++) {
-            Actor actor = actors.get(i);
-            if( car.getBounds().intersects(actor.getBounds()) ) {
-
-                if ( actor instanceof Hazards ){
-                    Hazards hazard = (Hazards) actor;
-                    car.reduceHealth(hazard.dealDamage());
-                    if (car.getHealth() <= 0) {
-                        gameOver();
-                    }
-
-                    if( splat == null) {
-                        splat = new Splat(this);
-                        splat.setX(car.getX());
-                        splat.setY(car.getY());
-
-                        splatFrames = 0;
-                    } // end splat
-
-                } // end instance of Hazards
-
-                //TODO: Add actor instance of modifier
-                else if ( actor instanceof Modifiers ){
-                    Modifiers modifier = (Modifiers) actor;
-                    if ( modifier.getModifierType().contains("health") ){
-//                        car.setHealth(car.getHealth() + modifier.getHealthIncrease());
-                        car.reduceHealth( - modifier.getHealthIncrease() );
-                    }
-                    else if ( modifier.getModifierType().contains("speed") ){
-                        car.setModifier( modifier.getSpeedIncrease() );
-                    }
+        for (int i = 0; i < hazards.size(); i++) {
+            Hazards hazard = hazards.get(i);
+            if( car.getBounds().intersects(hazard.getBounds())) {
+                car.reduceHealth(hazard.dealDamage());
+                if (car.getHealth() <= 0) {
+                    gameOver();
                 }
 
-                actor.setMarkedForRemoval(true);
-            } // end car intersects
+                hazard.setMarkedForRemoval(true);
+                if( splat == null) {
+                    splat = new Splat(this);
+                    splat.randomizeHit();
+                    splat.setX(car.getX());
+                    splat.setY(car.getY());
+
+                    splatFrames = 0;
+                }
+            }
         }
     }
 
@@ -271,6 +264,20 @@ public class DriveDemo extends Stage implements KeyListener {
         }).start();
     }
 
+    public void reset() {
+        car.setHealth(100);
+        resetGame();
+        initWorld();
+        keyPressedHandlerLeft = new InputHandler(this, car);
+        keyPressedHandlerLeft.action = InputHandler.Action.PRESS;
+        keyReleasedHandlerLeft = new InputHandler(this, car);
+        keyReleasedHandlerLeft.action = InputHandler.Action.RELSEASE;
+    }
+
+    public void quit() {
+
+    }
+
 
     public void game() {
         //loopSound("music.wav");
@@ -279,41 +286,30 @@ public class DriveDemo extends Stage implements KeyListener {
 
 //===================================================GAME LOOP==========================================================
 
-        while(!isGameOver()) {
+        while(true) {
             //TODO: Change 900 to a dynamic variable that adjusts depending on score
-
-            // Spawn hazards
-            if ( randomValueSelector.nextInt(1000) > 990 ) {
+            if ((randomValueSelector.nextInt(1000) > 990) && (!isGameOver() && !isPaused())) {
                 int currentHazardSelection = randomValueSelector.nextInt(100);
-                if ( currentHazardSelection < 80 ) {
+                if (currentHazardSelection < 80) {
                     spawnHazard("pothole");
-                } else if ( currentHazardSelection > 80 ) {
+                } else if (currentHazardSelection > 80) {
                     spawnHazard("moose");
                 }
-            } // end spawn hazards
-
-            // Spawn modifiers
-            if ( randomValueSelector.nextInt(1000) > 990 ) {
-                int currentHazardSelection = randomValueSelector.nextInt(100);
-                if ( currentHazardSelection < 20 ) {
-                    spawnModifier("health_s");
-                } else if ( currentHazardSelection > 80 ) {
-                    spawnModifier("health_l");
-                } else if ( currentHazardSelection > 40 && currentHazardSelection < 50) {
-                    spawnModifier("speed_increase");
-                }
-            } // end spawn modifiers
-
-
+            }
             // Debug code - Will use this in the future for testing actor array
             //System.out.println(hazards.size());
             long startTime = System.currentTimeMillis();
 
             checkCollision();
-            updateWorld();
+
+            if(!isGameOver() && !isPaused()){
+                updateWorld();
+            }
+
             paintWorld();
-            if (isGameOver()){
-                break;
+
+            if (isGameOver() && isPaused()){
+                continue;
             }
 
             usedTime = System.currentTimeMillis() - startTime;
@@ -338,16 +334,55 @@ public class DriveDemo extends Stage implements KeyListener {
         if( e.getKeyCode() == KeyEvent.VK_K) {
             Actor.debugCollision = !Actor.debugCollision;
         }
-
-        //keyPressedHandlerRight.handleInput(e);
+        else if( e.getKeyCode() == KeyEvent.VK_X) {
+            if (!isPaused()) {
+                endGame();
+            }
+        }
+        else if( e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            if (isPaused()) {
+                unPauseGame();
+            }
+            else if (!isGameOver()) {
+                pauseGame();
+            }
+        }
     }
 
     public void keyReleased(KeyEvent e) {
         keyReleasedHandlerLeft.handleInput(e);
-        //keyReleasedHandlerRight.handleInput(e);
     }
 
     public void keyTyped(KeyEvent e) {
     }
 
+    private class MouseListen implements MouseListener {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if ((retryButton.contains(e.getX(), e.getY())) && isGameOver()) {
+                System.out.println("Clicked retry");
+                reset();
+            }
+            else if ((quitButton.contains(e.getX(), e.getY())) && (isGameOver() || isPaused())) {
+                System.out.println("Clicked quit");
+            }
+            else if (resumeButton.contains(e.getX(), e.getY()) && isPaused()) {
+                System.out.println("Clicked resume");
+                unPauseGame();
+            }
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {}
+
+        @Override
+        public void mouseReleased(MouseEvent e) {}
+
+        @Override
+        public void mouseEntered(MouseEvent e) {}
+
+        @Override
+        public void mouseExited(MouseEvent e) {}
+    }
 }
