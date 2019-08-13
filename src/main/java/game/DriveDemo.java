@@ -113,6 +113,7 @@ public class DriveDemo extends Stage implements KeyListener {
         pausedBanner = new MenuButton(this, 319, 55, Stage.WIDTH /3 - 42, 300, "paused_banner");
         gameOverBanner = new MenuButton(this, 506, 55, Stage.WIDTH /8 + 20, 300, "gameover_banner");
 
+        cleanUp();
         //get the graphics from the buffer
         g = (Graphics2D) strategy.getDrawGraphics();
     }
@@ -247,6 +248,19 @@ public class DriveDemo extends Stage implements KeyListener {
         //TODO: Possibly handle both modifiers and hazards into the actor array
 
         // Updating hazards position
+        cleanUp();
+
+        if( splat != null ) {
+            splat.update();
+            splatFrames++;
+
+            if( splatFrames > 60) {
+                splat = null;
+            }
+        }
+    }
+
+    private void cleanUp(){
         for (int i = 0; i < actors.size(); i++) {
             Actor actor = actors.get(i);
             actor.update();
@@ -255,15 +269,6 @@ public class DriveDemo extends Stage implements KeyListener {
             }
             if (actor.isMarkedForRemoval()){
                 actors.remove(i);
-            }
-        }
-
-        if( splat != null ) {
-            splat.update();
-            splatFrames++;
-
-            if( splatFrames > 60) {
-                splat = null;
             }
         }
     }
@@ -276,9 +281,8 @@ public class DriveDemo extends Stage implements KeyListener {
                 if ( actor instanceof Hazards ){
                     Hazards hazard = (Hazards) actor;
                     car.reduceHealth(hazard.dealDamage());
-                    if ( ((Hazards) actor).getHazardType().equals("pothole") ){
-                        ((Hazards) actor).setDamage(0);
-                    }
+                    ((Hazards) actor).setDamage(0);
+
                     if (car.getHealth() <= 0) {
                         gameOver();
                     }
