@@ -23,7 +23,7 @@ public class Hazards extends Actor {
 
         vy = 10;
 
-        posX = rand.nextInt(500);
+        posX = rand.nextInt(600);
         posY = -500;
 
         potholeImages = new ArrayList<String>();

@@ -25,8 +25,8 @@ public class DriveDemo extends Stage implements KeyListener {
     Graphics2D g;
 
     private int fpsValueCounter = 0;
-    private int coolDownFrames;
-    private int[] coolDownAmounts;
+    private int[] scoreDifficultyLevels = {15000, 20000, 30000, 50000};
+    private int scoreDifficultyLevel = scoreDifficultyLevels[0];
 
     private Splat splat;
     private int splatFrames;
@@ -338,10 +338,26 @@ public class DriveDemo extends Stage implements KeyListener {
         keyReleasedHandlerLeft.action = InputHandler.Action.RELSEASE;
     }
 
-    public void quit() {
+    public void quit() {}
 
+    private void scaleScoreDifficultyLevel(){
+
+        if (car.getScore() >= scoreDifficultyLevels[2] / 5 && !(scoreDifficultyLevel == scoreDifficultyLevels[3])) {
+            System.out.println("level 3");
+            setScoreDifficultyLevel(scoreDifficultyLevels[3]);
+
+        } else if (car.getScore() >= scoreDifficultyLevels[1] / 5 && !(scoreDifficultyLevel == scoreDifficultyLevels[2])) {
+            System.out.println("level 2");
+            setScoreDifficultyLevel(scoreDifficultyLevels[2]);
+        } else if (car.getScore() >= scoreDifficultyLevels[0] / 5 && !(scoreDifficultyLevel == scoreDifficultyLevels[1])) {
+            System.out.println("level 1");
+            setScoreDifficultyLevel(scoreDifficultyLevels[1]);
+        }
     }
 
+    private void setScoreDifficultyLevel(int scoreValue){
+        scoreDifficultyLevel = scoreValue;
+    }
 
     public void game() {
         //loopSound("music.wav");
@@ -353,7 +369,7 @@ public class DriveDemo extends Stage implements KeyListener {
         while(true) {
 //            System.out.println(car.getHealth()); // debug code
             //TODO: Change 900 to a dynamic variable that adjusts depending on score
-            if ((randomValueSelector.nextInt(1000) > 990) && (!isGameOver() && !isPaused() && !isMainMenuDisplaying())) {
+            if ((randomValueSelector.nextInt(scoreDifficultyLevel) < car.getScore()) && (!isGameOver() && !isPaused() && !isMainMenuDisplaying())) {
                 int currentHazardSelection = randomValueSelector.nextInt(100);
                 if (currentHazardSelection < 80) {
                     spawnHazard("pothole", 80, 80, 80, 80);
@@ -366,6 +382,8 @@ public class DriveDemo extends Stage implements KeyListener {
                     }
                 }
             } // end spawn hazards
+
+            scaleScoreDifficultyLevel();
 
             // Spawn modifiers
             if ((randomValueSelector.nextInt(1000) > 990)  && (!isGameOver() && !isPaused() && !isMainMenuDisplaying())) {
@@ -418,7 +436,7 @@ public class DriveDemo extends Stage implements KeyListener {
             }
             usedTime = System.currentTimeMillis() - startTime;
         } // end loop
-    }
+    } // end game method
 
     public void keyPressed(KeyEvent e) {
         keyPressedHandlerLeft.handleInput(e);
